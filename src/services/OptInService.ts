@@ -7,13 +7,13 @@ import TransactionSigner from './TransactionSigner'
 @Service()
 export default class OptInService {
   @Inject()
-  readonly clientProvider: AlgodClientProvider
+  readonly clientProvider!: AlgodClientProvider
 
   @Inject('wallet-provider')
-  readonly walletProvider: WalletAccountProvider
+  readonly walletProvider!: WalletAccountProvider
 
   @Inject('transaction-signer')
-  readonly signer: TransactionSigner
+  readonly signer!: TransactionSigner
 
   private get client() {
     return this.clientProvider.client
