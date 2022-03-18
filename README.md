@@ -4,3 +4,4 @@
 
 - `algosdk`
 - `typedi`
+- `reflect-metadata`
