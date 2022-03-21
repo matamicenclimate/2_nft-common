@@ -11,7 +11,7 @@ export default interface AlgodConfigProvider {
 
 export const ALGOD_CONFIG_PROVIDER_ID = 'algod-config'
 
-export const AlgodConfigProvider = {
+export const AlgodConfigProviderDecorators = {
   Inject: () => Inject(ALGOD_CONFIG_PROVIDER_ID),
   Service: () => Service(ALGOD_CONFIG_PROVIDER_ID),
 }

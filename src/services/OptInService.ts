@@ -1,18 +1,22 @@
 import algosdk from 'algosdk'
-import WalletAccountProvider from './WalletAccountProvider'
+import WalletAccountProvider, {
+  WalletAccountProviderDecorators,
+} from './WalletAccountProvider'
 import { Inject, Service } from 'typedi'
 import AlgodClientProvider from './AlgodClientProvider'
-import TransactionSigner from './TransactionSigner'
+import TransactionSigner, {
+  TransactionSignerDecorators,
+} from './TransactionSigner'
 
 @Service()
 export default class OptInService {
   @Inject()
   readonly clientProvider!: AlgodClientProvider
 
-  @Inject('wallet-provider')
+  @WalletAccountProviderDecorators.Inject()
   readonly walletProvider!: WalletAccountProvider
 
-  @Inject('transaction-signer')
+  @TransactionSignerDecorators.Inject()
   readonly signer!: TransactionSigner
 
   private get client() {
