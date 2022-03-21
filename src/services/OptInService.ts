@@ -22,6 +22,9 @@ export default class OptInService {
   private get client() {
     return this.clientProvider.client
   }
+  static waitForConfirmation = algosdk.waitForConfirmation
+
+  static makeAssetTransferTransaction = algosdk.makeAssetTransferTxnWithSuggestedParams
 
   async optInAssetByID(assetID: number) {
     const params = await this.client.getTransactionParams().do()
@@ -32,7 +35,7 @@ export default class OptInService {
     const closeRemainderTo = undefined
     const note = undefined
     const amount = 0
-    const optInTxUnsigned = algosdk.makeAssetTransferTxnWithSuggestedParams(
+    const optInTxUnsigned = await OptInService.makeAssetTransferTransaction(
       sender,
       recipient,
       closeRemainderTo,
@@ -44,11 +47,12 @@ export default class OptInService {
     )
     const optInTxSigned = await this.signer.signTransaction(optInTxUnsigned)
     const optInSendTx = await this.client.sendRawTransaction(optInTxSigned).do()
-    const confirmedOptInTx = await algosdk.waitForConfirmation(
+    const confirmedOptInTx = await OptInService.waitForConfirmation(
       this.client,
       optInSendTx.txId,
       4
     )
+
     return confirmedOptInTx
   }
 }
