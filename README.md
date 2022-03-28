@@ -31,9 +31,9 @@ sequenceDiagram
     note left of B: Stores the NFT
     B-->>-C: Asset ID, Tx
     C->>+M: Asset ID
-    note right of M: Crear subasta
-    note right of M: Enviar fondos
-    note right of M: Llamar a 'setup'
+    note right of M: Create auction
+    note right of M: Fund the auction
+    note right of M: App call to 'setup'
     M-->>-C: App ID
     C->B: Asset ID
     note over B, C: Asset transfer to App wallet
