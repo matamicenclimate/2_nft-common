@@ -39,7 +39,6 @@ export class AuctionLogic {
     const approval = await this.programs.auctionApprovalProgram
     const clear = await this.programs.clearStateProgram
     const args: Uint8Array[] = [
-      // TODO: Replace with the actual marketplace account!
       algosdk.decodeAddress(this.account.account.addr).publicKey,
       assetId.toBytes(8, 'big'),
       Date.now().toBytes(8, 'big'),
