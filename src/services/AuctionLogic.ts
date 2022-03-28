@@ -6,6 +6,7 @@ import * as WalletAccountProvider from './WalletAccountProvider'
 import * as TransactionSigner from './TransactionSigner'
 import AlgodClientProvider from './AlgodClientProvider'
 import { TransactionOperation } from './TransactionOperation'
+import '../lib/binary/extension'
 
 @Service()
 export class AuctionLogic {
