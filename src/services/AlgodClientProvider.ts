@@ -1,16 +1,14 @@
 import { Service } from 'typedi'
 import algosdk from 'algosdk'
-import AlgodConfigProvider, {
-  AlgodConfigProviderDecorators,
-} from './AlgodConfigProvider'
+import * as AlgodConfigProvider from './AlgodConfigProvider'
 
 @Service()
 export default class AlgodClientProvider {
   readonly client: algosdk.Algodv2
 
   constructor(
-    @AlgodConfigProviderDecorators.Inject()
-    readonly config: AlgodConfigProvider
+    @AlgodConfigProvider.inject()
+    readonly config: AlgodConfigProvider.type
   ) {
     const token = {
       'x-api-key': this.config.token,
