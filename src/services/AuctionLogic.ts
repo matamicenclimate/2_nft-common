@@ -10,20 +10,18 @@ import '../lib/binary/extension'
 
 @Service()
 export class AuctionLogic {
-  @AVMProgramProvider.inject()
-  readonly programs!: AVMProgramProvider.type
-
-  @WalletAccountProvider.inject()
-  readonly account!: WalletAccountProvider.type
-
-  @Inject()
-  readonly client!: AlgodClientProvider
-
-  @TransactionSigner.inject()
-  readonly signer!: TransactionSigner.type
-
-  @Inject()
-  readonly op!: TransactionOperation
+  constructor(
+    @AVMProgramProvider.inject()
+    readonly programs: AVMProgramProvider.type,
+    @WalletAccountProvider.inject()
+    readonly account: WalletAccountProvider.type,
+    @TransactionSigner.inject()
+    readonly signer: TransactionSigner.type,
+    @Inject()
+    readonly client: AlgodClientProvider,
+    @Inject()
+    readonly op: TransactionOperation
+  ) {}
 
   /**
    * Creates the auction, sends the smart contract to the blockchain.
