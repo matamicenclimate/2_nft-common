@@ -5,11 +5,9 @@ import * as AlgodConfigProvider from './AlgodConfigProvider'
 @Service()
 export default class AlgodClientProvider {
   readonly client: algosdk.Algodv2
-
-  constructor(
-    @AlgodConfigProvider.inject()
-    readonly config: AlgodConfigProvider.type
-  ) {
+  readonly config: AlgodConfigProvider.type
+  constructor() {
+    this.config = AlgodConfigProvider.get()
     const token = {
       'x-api-key': this.config.token,
     }
