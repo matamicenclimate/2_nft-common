@@ -1,4 +1,4 @@
-import { Inject, Service } from 'typedi'
+import Container, { Inject, Service } from 'typedi'
 import { AuctionCreationResult } from '../lib/AuctionCreationResult'
 import * as AVMProgramProvider from './AVMProgramProvider'
 import * as algosdk from 'algosdk'
@@ -10,18 +10,19 @@ import '../lib/binary/extension'
 
 @Service()
 export class AuctionLogic {
-  constructor(
-    @AVMProgramProvider.inject()
-    readonly programs: AVMProgramProvider.type,
-    @WalletAccountProvider.inject()
-    readonly account: WalletAccountProvider.type,
-    @TransactionSigner.inject()
-    readonly signer: TransactionSigner.type,
-    @Inject()
-    readonly client: AlgodClientProvider,
-    @Inject()
-    readonly op: TransactionOperation
-  ) {}
+  readonly programs: AVMProgramProvider.type
+  readonly account: WalletAccountProvider.type
+  readonly signer: TransactionSigner.type
+  readonly client: AlgodClientProvider
+  readonly op: TransactionOperation
+
+  constructor() {
+    this.programs = AVMProgramProvider.get()
+    this.account = WalletAccountProvider.get()
+    this.signer = TransactionSigner.get()
+    this.client = Container.get(AlgodClientProvider)
+    this.op = Container.get(TransactionOperation)
+  }
 
   /**
    * Creates the auction, sends the smart contract to the blockchain.

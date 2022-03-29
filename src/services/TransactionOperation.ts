@@ -1,4 +1,4 @@
-import { Inject, Service } from 'typedi'
+import Container, { Inject, Service } from 'typedi'
 import { Transaction, waitForConfirmation } from 'algosdk'
 import * as TransactionSigner from './TransactionSigner'
 import AlgodClientProvider from './AlgodClientProvider'
@@ -10,13 +10,14 @@ import AlgodClientProvider from './AlgodClientProvider'
  */
 @Service()
 export class TransactionOperation {
-  @TransactionSigner.inject()
-  readonly signer!: TransactionSigner.type
-
-  @Inject()
-  readonly client!: AlgodClientProvider
-
+  readonly signer: TransactionSigner.type
+  readonly client: AlgodClientProvider
   rounds = 10
+
+  constructor() {
+    this.signer = TransactionSigner.get()
+    this.client = Container.get(AlgodClientProvider)
+  }
 
   /**
    * Takes a generic transaction, signs it, sends it to the chain and awaits
