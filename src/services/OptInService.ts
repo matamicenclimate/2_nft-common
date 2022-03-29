@@ -1,30 +1,27 @@
 import algosdk from 'algosdk'
-import WalletAccountProvider, {
-  WalletAccountProviderDecorators,
-} from './WalletAccountProvider'
+import * as WalletAccountProvider from './WalletAccountProvider'
 import { Inject, Service } from 'typedi'
 import AlgodClientProvider from './AlgodClientProvider'
-import TransactionSigner, {
-  TransactionSignerDecorators,
-} from './TransactionSigner'
+import * as TransactionSigner from './TransactionSigner'
 
 @Service()
 export default class OptInService {
   @Inject()
   readonly clientProvider!: AlgodClientProvider
 
-  @WalletAccountProviderDecorators.Inject()
-  readonly walletProvider!: WalletAccountProvider
+  @WalletAccountProvider.inject()
+  readonly walletProvider!: WalletAccountProvider.type
 
-  @TransactionSignerDecorators.Inject()
-  readonly signer!: TransactionSigner
+  @TransactionSigner.inject()
+  readonly signer!: TransactionSigner.type
 
   private get client() {
     return this.clientProvider.client
   }
   static waitForConfirmation = algosdk.waitForConfirmation
 
-  static makeAssetTransferTransaction = algosdk.makeAssetTransferTxnWithSuggestedParams
+  static makeAssetTransferTransaction =
+    algosdk.makeAssetTransferTxnWithSuggestedParams
 
   async optInAssetByID(assetID: number) {
     const params = await this.client.getTransactionParams().do()
