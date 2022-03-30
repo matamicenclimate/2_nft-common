@@ -1,4 +1,4 @@
-import Container, { Inject, Service } from 'typedi'
+import Container, { Service } from 'typedi'
 import { Transaction, waitForConfirmation } from 'algosdk'
 import * as TransactionSigner from './TransactionSigner'
 import AlgodClientProvider from './AlgodClientProvider'
