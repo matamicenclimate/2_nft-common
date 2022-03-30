@@ -78,7 +78,7 @@ export class AuctionLogic {
     const suggestedParams = await client.getTransactionParams().do()
     const account = this.account.account.addr
     const appAddr = algosdk.getApplicationAddress(appIndex)
-    const amount = 100000 + 10000 + 3 * 1000
+    const amount = 100000 + 100000 + 3 * 1000
     const fundTxn = await algosdk.makePaymentTxnWithSuggestedParamsFromObject({
       from: account,
       to: appAddr,
