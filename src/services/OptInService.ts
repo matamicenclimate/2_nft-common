@@ -27,7 +27,8 @@ export default class OptInService {
   async optInAssetByID(
     assetID: number,
     sender: string = this.walletProvider.account.addr,
-    recipient = sender
+    recipient = sender,
+    signer?: algosdk.Account
   ) {
     const params = await this.client.getTransactionParams().do()
     const revocationTarget = undefined
@@ -45,7 +46,10 @@ export default class OptInService {
       assetID,
       params
     )
-    const optInTxSigned = await this.signer.signTransaction(optInTxUnsigned)
+    const optInTxSigned =
+      signer != null
+        ? await optInTxUnsigned.signTxn(signer.sk)
+        : await this.signer.signTransaction(optInTxUnsigned)
     const optInSendTx = await this.client.sendRawTransaction(optInTxSigned).do()
     const confirmedOptInTx = await OptInService.waitForConfirmation(
       this.client,

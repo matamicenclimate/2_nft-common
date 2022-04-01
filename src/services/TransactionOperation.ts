@@ -1,5 +1,5 @@
 import Container, { Service } from 'typedi'
-import { Transaction, waitForConfirmation } from 'algosdk'
+import algosdk, { Transaction, waitForConfirmation } from 'algosdk'
 import * as TransactionSigner from './TransactionSigner'
 import AlgodClientProvider from './AlgodClientProvider'
 
@@ -27,10 +27,14 @@ export class TransactionOperation {
    */
   async signAndConfirm<T = Record<string, unknown>>(
     transaction: Transaction,
-    overrideRounds?: number
+    overrideRounds?: number,
+    overrideAccount?: algosdk.Account
   ): Promise<{ txId: number; result: T }> {
     const client = this.client.client
-    const signedTxn = await this.signer.signTransaction(transaction)
+    const signedTxn =
+      overrideAccount == null
+        ? await this.signer.signTransaction(transaction)
+        : transaction.signTxn(overrideAccount.sk)
     const { txId } = await client.sendRawTransaction(signedTxn).do()
     const result = (await waitForConfirmation(
       client,
@@ -38,5 +42,23 @@ export class TransactionOperation {
       overrideRounds ?? this.rounds
     )) as unknown as T
     return { result, txId }
+  }
+
+  /**
+   * Simple payment method.
+   * @param from
+   * @param to
+   * @param amount
+   * @returns
+   */
+  async pay(from: algosdk.Account, to: string, amount: number) {
+    const suggestedParams = await this.client.client.getTransactionParams().do()
+    const tx = await algosdk.makePaymentTxnWithSuggestedParamsFromObject({
+      from: from.addr,
+      to,
+      amount,
+      suggestedParams,
+    })
+    return await this.signAndConfirm(tx, undefined, from)
   }
 }

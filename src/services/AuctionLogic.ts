@@ -34,7 +34,8 @@ export class AuctionLogic {
   async createAuction(
     assetId: number,
     reserve: number,
-    bidIncrement: number
+    bidIncrement: number,
+    account: algosdk.Account
   ): Promise<AuctionCreationResult> {
     const approval = await this.programs.auctionApprovalProgram
     const clear = await this.programs.clearStateProgram
@@ -48,18 +49,31 @@ export class AuctionLogic {
     ]
     const client = this.client.client
     const params = await client.getTransactionParams().do()
-    const txn = await algosdk.makeApplicationCreateTxn(
-      this.account.account.addr,
-      params,
-      algosdk.OnApplicationComplete.NoOpOC,
-      approval,
-      clear,
-      0,
-      0,
-      7,
-      2,
-      args
-    )
+    console.log(`Creating smart app, bound to ${account.addr}...`)
+    const txn = await algosdk.makeApplicationCreateTxnFromObject({
+      from: account.addr,
+      suggestedParams: params,
+      onComplete: algosdk.OnApplicationComplete.NoOpOC,
+      approvalProgram: approval,
+      clearProgram: clear,
+      numGlobalByteSlices: 2,
+      numGlobalInts: 7,
+      numLocalByteSlices: 0,
+      numLocalInts: 0,
+      appArgs: args,
+    })
+    // const txn = await algosdk.makeApplicationCreateTxn(
+    //   account.addr,
+    //   params,
+    //   algosdk.OnApplicationComplete.NoOpOC,
+    //   approval,
+    //   clear,
+    //   0,
+    //   0,
+    //   7,
+    //   2,
+    //   args
+    // )
     const { txId, result } =
       await this.op.signAndConfirm<AuctionCreationResult>(txn)
     console.log(
@@ -85,7 +99,7 @@ export class AuctionLogic {
       amount,
       suggestedParams,
     })
-    return await this.op.signAndConfirm(fundTxn)
+    return { amount, result: await this.op.signAndConfirm(fundTxn) }
   }
 
   /**
@@ -116,14 +130,17 @@ export class AuctionLogic {
    * @param assetId
    * @returns
    */
-  async makeTransferToApp(appIndex: number, assetId: number) {
+  async makeTransferToApp(
+    appIndex: number,
+    assetId: number,
+    from = this.account.account
+  ) {
     const client = this.client.client
     const suggestedParams = await client.getTransactionParams().do()
-    const account = this.account.account.addr
     const appAddr = algosdk.getApplicationAddress(appIndex)
     const fundNftTxn =
       await algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
-        from: account,
+        from: from.addr,
         to: appAddr,
         assetIndex: assetId,
         amount: 1,
