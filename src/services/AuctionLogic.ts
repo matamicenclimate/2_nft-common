@@ -130,18 +130,26 @@ export class AuctionLogic {
    * @param assetId
    * @returns
    */
-  async makeTransferToApp(
-    appIndex: number,
-    assetId: number,
-    from = this.account.account
-  ) {
+  async makeTransferToApp(appIndex: number, assetId: number) {
+    const address = algosdk.getApplicationAddress(appIndex)
+    return await this.makeTransferToAccount(address, assetId)
+  }
+
+  /**
+   * Makes the asset to be transferred from this running account into the
+   * app's account.
+   * @param appIndex
+   * @param assetId
+   * @returns
+   */
+  async makeTransferToAccount(address: string, assetId: number) {
     const client = this.client.client
     const suggestedParams = await client.getTransactionParams().do()
-    const appAddr = algosdk.getApplicationAddress(appIndex)
+    const account = this.account.account.addr
     const fundNftTxn =
       await algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
-        from: from.addr,
-        to: appAddr,
+        from: account,
+        to: address,
         assetIndex: assetId,
         amount: 1,
         suggestedParams,
