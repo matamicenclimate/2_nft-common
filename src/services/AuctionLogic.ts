@@ -84,8 +84,6 @@ export class AuctionLogic {
 
   /**
    * Funds the given auction (The app ID MUST be an auction app!).
-   * @param appIndex
-   * @returns
    */
   async fundAuction(appIndex: number) {
     const client = this.client.client
@@ -104,9 +102,6 @@ export class AuctionLogic {
 
   /**
    * Calls the 'setup' procedure from the provided app (id).
-   * @param appIndex
-   * @param assetId
-   * @returns
    */
   async makeAppCallSetupProc(appIndex: number, assetId: number) {
     const client = this.client.client
@@ -126,23 +121,21 @@ export class AuctionLogic {
   /**
    * Makes the asset to be transferred from this running account into the
    * app's account.
-   * @param appIndex
-   * @param assetId
-   * @returns
    */
-  async makeTransferToApp(appIndex: number, assetId: number) {
+  async makeTransferToApp(appIndex: number, assetId: number, note: Uint8Array) {
     const address = algosdk.getApplicationAddress(appIndex)
-    return await this.makeTransferToAccount(address, assetId)
+    return await this.makeTransferToAccount(address, assetId, note)
   }
 
   /**
    * Makes the asset to be transferred from this running account into the
    * app's account.
-   * @param appIndex
-   * @param assetId
-   * @returns
    */
-  async makeTransferToAccount(address: string, assetId: number) {
+  async makeTransferToAccount(
+    address: string,
+    assetId: number,
+    note: Uint8Array
+  ) {
     const client = this.client.client
     const suggestedParams = await client.getTransactionParams().do()
     const account = this.account.account.addr
@@ -153,6 +146,7 @@ export class AuctionLogic {
         assetIndex: assetId,
         amount: 1,
         suggestedParams,
+        note,
       })
     return await this.op.signAndConfirm(fundNftTxn)
   }
