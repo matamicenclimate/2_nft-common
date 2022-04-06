@@ -39,11 +39,12 @@ export class AuctionLogic {
   ): Promise<AuctionCreationResult> {
     const approval = await this.programs.auctionApprovalProgram
     const clear = await this.programs.clearStateProgram
+    const now = Date.now() // 1000
     const args: Uint8Array[] = [
       algosdk.decodeAddress(this.account.account.addr).publicKey,
       assetId.toBytes(8, 'big'),
-      (Date.now() / 1000).toBytes(8, 'big'),
-      (Date.now() / 1000 + 5 * 60).toBytes(8, 'big'),
+      now.toBytes(8, 'big'),
+      (now + 5 * 60 * 1000).toBytes(8, 'big'),
       reserve.toBytes(8, 'big'),
       bidIncrement.toBytes(8, 'big'),
     ]
@@ -62,18 +63,6 @@ export class AuctionLogic {
       numLocalInts: 0,
       appArgs: args,
     })
-    // const txn = await algosdk.makeApplicationCreateTxn(
-    //   account.addr,
-    //   params,
-    //   algosdk.OnApplicationComplete.NoOpOC,
-    //   approval,
-    //   clear,
-    //   0,
-    //   0,
-    //   7,
-    //   2,
-    //   args
-    // )
     const { txId, result } =
       await this.op.signAndConfirm<AuctionCreationResult>(txn)
     console.log(
@@ -122,7 +111,11 @@ export class AuctionLogic {
    * Makes the asset to be transferred from this running account into the
    * app's account.
    */
-  async makeTransferToApp(appIndex: number, assetId: number, note: Uint8Array) {
+  async makeTransferToApp(
+    appIndex: number,
+    assetId: number,
+    note?: Uint8Array
+  ) {
     const address = algosdk.getApplicationAddress(appIndex)
     return await this.makeTransferToAccount(address, assetId, note)
   }
@@ -134,7 +127,7 @@ export class AuctionLogic {
   async makeTransferToAccount(
     address: string,
     assetId: number,
-    note: Uint8Array
+    note?: Uint8Array
   ) {
     const client = this.client.client
     const suggestedParams = await client.getTransactionParams().do()
