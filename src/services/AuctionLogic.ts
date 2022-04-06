@@ -42,8 +42,8 @@ export class AuctionLogic {
     const args: Uint8Array[] = [
       algosdk.decodeAddress(this.account.account.addr).publicKey,
       assetId.toBytes(8, 'big'),
-      Date.now().toBytes(8, 'big'),
-      (Date.now() + 5 * 60 * 1000).toBytes(8, 'big'),
+      (Date.now() / 1000).toBytes(8, 'big'),
+      (Date.now() / 1000 + 5 * 60).toBytes(8, 'big'),
       reserve.toBytes(8, 'big'),
       bidIncrement.toBytes(8, 'big'),
     ]
