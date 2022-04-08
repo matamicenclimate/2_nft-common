@@ -7,6 +7,7 @@ import * as TransactionSigner from './TransactionSigner'
 import AlgodClientProvider from './AlgodClientProvider'
 import { TransactionOperation } from './TransactionOperation'
 import '../lib/binary/extension'
+import config from 'src/config/default'
 
 @Service()
 export class AuctionLogic {
@@ -39,12 +40,15 @@ export class AuctionLogic {
   ): Promise<AuctionCreationResult> {
     const approval = await this.programs.auctionApprovalProgram
     const clear = await this.programs.clearStateProgram
-    const now = Date.now() // 1000
+    const now = Date.now() / 1000
+    const start = Math.floor(now + 120)
+    const end = start + parseInt(config.endAuctionSeconds)
+    console.warn(`Auction start in ${start} and end on ${end}`)
     const args: Uint8Array[] = [
       algosdk.decodeAddress(this.account.account.addr).publicKey,
       assetId.toBytes(8, 'big'),
-      now.toBytes(8, 'big'),
-      (now + 5 * 60 * 1000).toBytes(8, 'big'),
+      start.toBytes(8, 'big'),
+      end.toBytes(8, 'big'),
       reserve.toBytes(8, 'big'),
       bidIncrement.toBytes(8, 'big'),
     ]
