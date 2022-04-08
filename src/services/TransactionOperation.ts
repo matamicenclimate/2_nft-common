@@ -2,6 +2,8 @@ import Container, { Service } from 'typedi'
 import algosdk, { Transaction, waitForConfirmation } from 'algosdk'
 import * as TransactionSigner from './TransactionSigner'
 import AlgodClientProvider from './AlgodClientProvider'
+import * as app from '../lib/app'
+import { assertArray } from '../lib/types'
 
 /**
  * This service provides a series of façade methods to
@@ -10,6 +12,9 @@ import AlgodClientProvider from './AlgodClientProvider'
  */
 @Service()
 export class TransactionOperation {
+  static get do() {
+    return Container.get(TransactionOperation)
+  }
   readonly signer: TransactionSigner.type
   readonly client: AlgodClientProvider
   rounds = 10
@@ -60,5 +65,36 @@ export class TransactionOperation {
       suggestedParams,
     })
     return await this.signAndConfirm(tx, undefined, from)
+  }
+
+  /**
+   * Requests the raw application information by ID.
+   */
+  async requestAppInfo(appId: number) {
+    return await this.client.client.getApplicationByID(appId).do()
+  }
+
+  /**
+   * Gets the whole application information.
+   */
+  async getApplication(appId: number): Promise<Record<string, app.Dict>> {
+    const info = await this.requestAppInfo(appId)
+    const out: Record<string, app.Dict> = {}
+    for (const [k, v] of Object.entries(info)) {
+      out[k] = app.parseEntries(v)
+    }
+    return out
+  }
+
+  /**
+   * Queries the application information, then extracts the global
+   * state.
+   */
+  async getApplicationState<A extends app.Dict = app.Dict>(
+    appId: number
+  ): Promise<A> {
+    const result = await this.requestAppInfo(appId)
+    const state = assertArray(result.params['global-state']) as app.Entry[]
+    return app.parseEntries(state) as A
   }
 }
