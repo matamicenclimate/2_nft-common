@@ -42,7 +42,7 @@ export class AuctionLogic {
     const clear = await this.programs.clearStateProgram
     const now = Date.now() / 1000
     const start = Math.floor(now + 120)
-    const end = start + Math.trunc(endTime)
+    const end = Math.trunc(start + endTime)
     console.warn(`Auction start in ${start} and end on ${end}`)
     const args: Uint8Array[] = [
       algosdk.decodeAddress(this.account.account.addr).publicKey,
