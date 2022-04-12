@@ -44,3 +44,4 @@ sequenceDiagram
 - `algosdk`
 - `typedi`
 - `reflect-metadata`
+- `axios`
