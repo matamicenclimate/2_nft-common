@@ -16,6 +16,8 @@ export type HttpVerb =
   | 'HEAD'
   | 'PATCH'
 
+export type HttpVerbLow = Lowercase<HttpVerb>
+
 /**
  * Describes a type constraint for an API endpoint.
  */
@@ -40,9 +42,9 @@ export type Post<Path extends string, Res, Body, Head = undefined> = Endpoint<
   Head
 > & { body: Body }
 
-export type AnyEndpoint = Endpoint<HttpVerb, string, any, any>
-export type AnyPost = Post<string, any, any, any>
-export type AnyGet = Get<string, any, any, any>
+export type AnyEndpoint = Endpoint<HttpVerb, string, unknown, unknown>
+export type AnyPost = Post<string, unknown, unknown, unknown>
+export type AnyGet = Get<string, unknown, unknown, unknown>
 
 /**
  * Extracts the request body of a POST type request.
