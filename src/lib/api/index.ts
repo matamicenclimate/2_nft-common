@@ -40,9 +40,9 @@ export type Post<Path extends string, Res, Body, Head = undefined> = Endpoint<
   Head
 > & { body: Body }
 
-export type AnyEndpoint = Endpoint<HttpVerb, string, undefined, undefined>
-export type AnyPost = Post<string, undefined, undefined, undefined>
-export type AnyGet = Get<string, undefined, undefined, undefined>
+export type AnyEndpoint = Endpoint<HttpVerb, string, any, any>
+export type AnyPost = Post<string, any, any, any>
+export type AnyGet = Get<string, any, any, any>
 
 /**
  * Extracts the request body of a POST type request.
