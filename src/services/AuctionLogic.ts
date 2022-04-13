@@ -36,14 +36,20 @@ export class AuctionLogic {
     reserve: number,
     bidIncrement: number,
     account: algosdk.Account,
-    endTime: number
+    endTime: number,
+    causeWallet: string,
+    creatorWallet: string,
+    causePercentage: number,
+    creatorPercentage: number
   ): Promise<AuctionCreationResult> {
     const approval = await this.programs.auctionApprovalProgram
     const clear = await this.programs.clearStateProgram
     const now = Date.now() / 1000
-    const start = Math.floor(now + 120)
+    const start = Math.floor(now + 60)
     const end = Math.trunc(start + endTime)
     console.warn(`Auction start in ${start} and end on ${end}`)
+    console.warn(`creatorAddress ${creatorWallet} and causeAddress on ${causeWallet}`)
+    console.warn(`causePercentage ${causePercentage} and creatorPercentage on ${creatorPercentage}`)
     const args: Uint8Array[] = [
       algosdk.decodeAddress(this.account.account.addr).publicKey,
       assetId.toBytes(8, 'big'),
@@ -51,6 +57,10 @@ export class AuctionLogic {
       end.toBytes(8, 'big'),
       reserve.toBytes(8, 'big'),
       bidIncrement.toBytes(8, 'big'),
+      algosdk.decodeAddress(creatorWallet).publicKey,
+      algosdk.decodeAddress(causeWallet).publicKey,
+      creatorPercentage.toBytes(8, 'big'),
+      causePercentage.toBytes(8, 'big'),
     ]
     const client = this.client.client
     const params = await client.getTransactionParams().do()
@@ -61,8 +71,8 @@ export class AuctionLogic {
       onComplete: algosdk.OnApplicationComplete.NoOpOC,
       approvalProgram: approval,
       clearProgram: clear,
-      numGlobalByteSlices: 2,
-      numGlobalInts: 7,
+      numGlobalByteSlices: 4,
+      numGlobalInts: 9,
       numLocalByteSlices: 0,
       numLocalInts: 0,
       appArgs: args,

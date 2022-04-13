@@ -35,4 +35,6 @@ export type AuctionAppState = {
   reserve_amount: number
   start: number
   seller: Uint8Array
+  cause: Uint8Array
+  creator: Uint8Array
 }
