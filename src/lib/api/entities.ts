@@ -40,3 +40,11 @@ export interface Nft {
   title: string
   creator: string
 }
+
+export interface Asset {
+  amount: number
+  'asset-id': number
+  deleted: boolean
+  'is-frozen': boolean
+  'opted-in-at-round': number
+}
