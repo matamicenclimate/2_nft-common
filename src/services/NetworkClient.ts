@@ -4,6 +4,7 @@ import {
   AnyEndpoint,
   AnyGet,
   AnyPost,
+  HttpVerbLow,
   Params,
   Query,
   Response,
@@ -65,17 +66,30 @@ export type CustomClient<T extends EndpointClient> = Omit<
   ): ApiFuture<T, 'post', K>
 }
 
+function patch(client: AxiosInstance, key: HttpVerbLow) {
+  const original = client[key]
+  client[key] = (url, config = {}) => {
+    const params: Record<string, string> =
+      (config as unknown as Record<string, Record<string, string>>).params ?? {}
+    ;(config as unknown as Record<string, unknown>).params = (
+      config as unknown as Record<string, unknown>
+    ).query
+    url = url.toString().replace(/:([^\/]+)/g, (_, p) => params[p])
+    return original(url, config as unknown as Record<string, unknown>)
+  }
+}
+
 export function makeClient<T extends EndpointClient>(
   baseURL: string
 ): CustomClient<T> {
   const client = Axios.create({ baseURL })
-  const original = client.get
-  client.get = (url, config) => {
-    const params = config?.params ?? {}
-    delete config?.params
-    url = url.toString().replace(/:([^\/]+)/g, (_, p) => params[p])
-    return original(url, config)
-  }
+  patch(client, 'get')
+  patch(client, 'post')
+  patch(client, 'put')
+  patch(client, 'delete')
+  patch(client, 'patch')
+  patch(client, 'head')
+  patch(client, 'options')
   return client as CustomClient<T>
 }
 
