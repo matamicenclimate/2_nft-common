@@ -1,6 +1,13 @@
 import Axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
 import { Service } from 'typedi'
-import { AnyEndpoint, AnyGet, AnyPost, Query, Response } from '../lib/api'
+import {
+  AnyEndpoint,
+  AnyGet,
+  AnyPost,
+  Params,
+  Query,
+  Response,
+} from '../lib/api'
 import { causes, core } from '../lib/api/endpoints'
 
 export interface EndpointClient {
@@ -28,17 +35,33 @@ export type CustomClient<T extends EndpointClient> = Omit<
 > & {
   get<K extends keyof T['get']>(
     resource: K,
-    options?: Omit<AxiosRequestConfig, 'query'> &
+    options?: Omit<AxiosRequestConfig, 'query' | 'params'> &
       (T['get'] extends undefined
         ? {}
-        : Query<NonNullable<T['get']>[K]> extends undefined
-        ? {}
-        : { query: Query<NonNullable<T['get']>[K]> })
+        : (Query<NonNullable<T['get']>[K]> extends undefined
+            ? {}
+            : { query: Query<NonNullable<T['get']>[K]> }) &
+            (Params<NonNullable<T['get']>[K]> extends undefined
+              ? {}
+              : {
+                  params: {
+                    [R in NonNullable<Params<NonNullable<T['get']>[K]>>]: string
+                  }
+                }))
   ): ApiFuture<T, 'get', K>
   post<K extends keyof T['post']>(
     resource: K,
     data: any,
-    options?: AxiosRequestConfig
+    options?: Omit<AxiosRequestConfig, 'params'> &
+      (T['post'] extends undefined
+        ? {}
+        : Params<NonNullable<T['post']>[K]> extends undefined
+        ? {}
+        : {
+            params: {
+              [R in NonNullable<Params<NonNullable<T['post']>[K]>>]: string
+            }
+          })
   ): ApiFuture<T, 'post', K>
 }
 

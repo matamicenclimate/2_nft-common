@@ -12,6 +12,7 @@ export type core = {
   get: {
     nfts: Get<Nft[]>
     assets: Get<Asset[], { wallet?: string }>
+    'asset/:id': Get<Asset, undefined, 'id'>
     healthz: Get<'healthz', { status: 'ok' }>
   }
   post: {
@@ -38,6 +39,7 @@ export type causes = {
         imageUrl: string
       },
       Cause,
+      undefined,
       {
         authorization: string
       }
