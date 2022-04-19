@@ -9,27 +9,15 @@ import { Cause, Nft } from './entities'
  * Endpoints for the core microservice.
  */
 export type core = {
-  api: {
-    v1: {
-      get_nfts: Get<'nfts', Nft[]>
-      get_healthz: Get<'healthz', { status: 'ok' }>
-      post_opt_in: Post<
-        'opt-in',
-        { targetAccount: string },
-        { assetId: number }
-      >
-      post_create_auction: Post<
-        'create-auction',
-        { appIndex: number },
-        { assetId: number }
-      >
-      post_activate_auction: Post<
-        'activate-auction',
-        { appId: number; assetId: number },
-        undefined
-      >
-      post_ipfs: Post<'ipfs', Nft, FormData>
-    }
+  get: {
+    nfts: Get<Nft[]>
+    healthz: Get<'healthz', { status: 'ok' }>
+  }
+  post: {
+    'opt-in': Post<{ targetAccount: string }, { assetId: number }>
+    'create-auction': Post<{ appIndex: number }, { assetId: number }>
+    'activate-auction': Post<{ appId: number; assetId: number }, undefined>
+    ipfs: Post<Nft, FormData>
   }
 }
 
@@ -37,22 +25,21 @@ export type core = {
  * Endpoints for the causes microservice.
  */
 export type causes = {
-  api: {
-    v1: {
-      get_causes: Get<'causes', Cause[]>
-      post_causes: Post<
-        'causes',
-        {
-          title: string
-          description: string
-          wallet: string
-          imageUrl: string
-        },
-        Cause,
-        {
-          authorization: string
-        }
-      >
-    }
+  get: {
+    causes: Get<'causes', Cause[]>
+  }
+  post: {
+    causes: Post<
+      {
+        title: string
+        description: string
+        wallet: string
+        imageUrl: string
+      },
+      Cause,
+      {
+        authorization: string
+      }
+    >
   }
 }

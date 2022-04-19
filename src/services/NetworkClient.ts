@@ -48,34 +48,13 @@ export function makeClient<T extends EndpointClient>(
   return Axios.create({ baseURL }) as CustomClient<T>
 }
 
-export type CoreV1 = core['api']['v1']
-export type CausesV1 = causes['api']['v1']
-
 /**
  * This service is capable of consuming configured
  */
 @Service()
 export default class NetworkClient {
-  readonly core: CustomClient<{
-    get: {
-      nfts: CoreV1['get_nfts']
-      healthz: CoreV1['get_healthz']
-    }
-    post: {
-      ['opt-in']: CoreV1['post_opt_in']
-      ['create-auction']: CoreV1['post_create_auction']
-      ['activate-auction']: CoreV1['post_activate_auction']
-      ipfs: CoreV1['post_ipfs']
-    }
-  }>
-  readonly causes: CustomClient<{
-    get: {
-      causes: CausesV1['get_causes']
-    }
-    post: {
-      causes: CausesV1['post_causes']
-    }
-  }>
+  readonly core: CustomClient<core>
+  readonly causes: CustomClient<causes>
   constructor(coreUrl: string, causesUrl: string) {
     this.core = makeClient(coreUrl)
     this.causes = makeClient(causesUrl)
