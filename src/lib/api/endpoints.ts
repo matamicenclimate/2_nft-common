@@ -11,8 +11,8 @@ import { Asset, Cause, Nft } from './entities'
 export type core = {
   get: {
     nfts: Get<Nft[]>
-    assets: Get<Asset[], { wallet?: string }>
-    'asset/:id': Get<Asset, undefined, 'id'>
+    assets: Get<{ assets: Asset[] }, { wallet?: string }>
+    'asset/:id': Get<{ value: Nft }, undefined, 'id'>
     healthz: Get<'healthz', { status: 'ok' }>
   }
   post: {

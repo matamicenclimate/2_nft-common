@@ -68,7 +68,15 @@ export type CustomClient<T extends EndpointClient> = Omit<
 export function makeClient<T extends EndpointClient>(
   baseURL: string
 ): CustomClient<T> {
-  return Axios.create({ baseURL }) as CustomClient<T>
+  const client = Axios.create({ baseURL })
+  const original = client.get
+  client.get = (url, config) => {
+    const params = config?.params ?? {}
+    delete config?.params
+    url = url.toString().replace(/:([^\/]+)/g, (_, p) => params[p])
+    return original(url, config)
+  }
+  return client as CustomClient<T>
 }
 
 /**
