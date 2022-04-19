@@ -37,4 +37,5 @@ export type AuctionAppState = {
   seller: Uint8Array
   cause: Uint8Array
   creator: Uint8Array
+  rekey: Uint8Array
 }

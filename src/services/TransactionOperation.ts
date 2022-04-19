@@ -67,6 +67,18 @@ export class TransactionOperation {
     return await this.signAndConfirm(tx, undefined, from)
   }
 
+  async closeReminderTransaction(marketplaceAccount: algosdk.Account, rekeyAccount: string) {
+    const suggestedParams = await this.client.client.getTransactionParams().do()
+    const tx = await algosdk.makePaymentTxnWithSuggestedParamsFromObject({
+      from: rekeyAccount,
+      to: marketplaceAccount.addr,
+      closeRemainderTo: marketplaceAccount.addr,
+      amount: 1000,
+      suggestedParams,
+    })
+    return await this.signAndConfirm(tx, undefined, marketplaceAccount)
+  }
+
   /**
    * Requests the raw application information by ID.
    */

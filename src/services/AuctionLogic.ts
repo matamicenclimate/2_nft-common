@@ -61,6 +61,7 @@ export class AuctionLogic {
       algosdk.decodeAddress(causeWallet).publicKey,
       creatorPercentage.toBytes(8, 'big'),
       causePercentage.toBytes(8, 'big'),
+      algosdk.decodeAddress(account.addr).publicKey
     ]
     const client = this.client.client
     const params = await client.getTransactionParams().do()
@@ -71,7 +72,7 @@ export class AuctionLogic {
       onComplete: algosdk.OnApplicationComplete.NoOpOC,
       approvalProgram: approval,
       clearProgram: clear,
-      numGlobalByteSlices: 4,
+      numGlobalByteSlices: 5,
       numGlobalInts: 9,
       numLocalByteSlices: 0,
       numLocalInts: 0,
