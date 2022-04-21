@@ -5,8 +5,7 @@
   and the client in-sync (in schema terms) all the time.
 */
 
-export type Zero = 0
-
+/** Any valid RESTful type HTTP verb. */
 export type HttpVerb =
   | 'GET'
   | 'POST'
@@ -16,10 +15,15 @@ export type HttpVerb =
   | 'HEAD'
   | 'PATCH'
 
+/** Lowercase version of the HTTP verbs. */
 export type HttpVerbLow = Lowercase<HttpVerb>
 
 /**
  * Describes a type constraint for an API endpoint.
+ * @template Action The HTTP verb action.
+ * @template Res The structure of response of the endpoint.
+ * @template Params A union of path parameters.
+ * @template Head Required headers object.
  */
 export type Endpoint<
   Action extends HttpVerb,
@@ -33,6 +37,13 @@ export type Endpoint<
   params: Params
 }
 
+/**
+ * Represents a GET type request.
+ * @template Res The structure of response of the endpoint.
+ * @template Query A query object.
+ * @template Params A union of path parameters.
+ * @template Head Required headers object.
+ */
 export type Get<
   Res,
   Query = undefined,
@@ -40,6 +51,13 @@ export type Get<
   Head = undefined
 > = Endpoint<'GET', Res, Params, Head> & { query: Query }
 
+/**
+ * Represents a POST type request.
+ * @template Res The structure of response of the endpoint.
+ * @template Body The structure of the request body.
+ * @template Params A union of path parameters.
+ * @template Head Required headers object.
+ */
 export type Post<
   Res,
   Body,
