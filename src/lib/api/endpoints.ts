@@ -13,7 +13,7 @@ export type core = {
     nfts: Get<Nft[]>
     assets: Get<{ assets: Asset[] }, { wallet?: string }>
     'asset/:id': Get<{ value: Nft }, undefined, 'id'>
-    healthz: Get<'healthz', { status: 'ok' }>
+    healthz: Get<{ status: 'ok' }>
   }
   post: {
     'opt-in': Post<{ targetAccount: string }, { assetId: number }>
