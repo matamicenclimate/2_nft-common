@@ -4,6 +4,7 @@ import {
   AnyEndpoint,
   AnyGet,
   AnyPost,
+  Body,
   HttpVerbLow,
   Params,
   Query,
@@ -30,39 +31,50 @@ export type ApiFuture<
   Res extends keyof T[Verb]
 > = WillRespond<T[Verb][Res] extends AnyEndpoint ? T[Verb][Res] : never>
 
+type GetOptions<
+  T extends EndpointClient,
+  K extends keyof T['get']
+> = T['get'] extends undefined
+  ? {}
+  : (Query<NonNullable<T['get']>[K]> extends undefined
+      ? {}
+      : { query: Query<NonNullable<T['get']>[K]> }) &
+      (Params<NonNullable<T['get']>[K]> extends undefined
+        ? {}
+        : {
+            params: {
+              [R in NonNullable<Params<NonNullable<T['get']>[K]>>]: string
+            }
+          })
+
+type PostOptions<T extends EndpointClient, K extends keyof T['post']> = Maybe<
+  T['post'],
+  Maybe<
+    Params<NonNullable<T['post']>[K]>,
+    {
+      params: {
+        [R in NonNullable<Params<NonNullable<T['post']>[K]>>]: string
+      }
+    }
+  >
+>
+
+type If<T, A, B> = T extends undefined ? B : A
+type Require<T, A> = If<T, A, never>
+type Maybe<T, A> = If<T, A, {}>
+
 export type CustomClient<T extends EndpointClient> = Omit<
   AxiosInstance,
   'get' | 'post'
 > & {
   get<K extends keyof T['get']>(
     resource: K,
-    options?: Omit<AxiosRequestConfig, 'query' | 'params'> &
-      (T['get'] extends undefined
-        ? {}
-        : (Query<NonNullable<T['get']>[K]> extends undefined
-            ? {}
-            : { query: Query<NonNullable<T['get']>[K]> }) &
-            (Params<NonNullable<T['get']>[K]> extends undefined
-              ? {}
-              : {
-                  params: {
-                    [R in NonNullable<Params<NonNullable<T['get']>[K]>>]: string
-                  }
-                }))
+    options?: Omit<AxiosRequestConfig, 'query' | 'params'> & GetOptions<T, K>
   ): ApiFuture<T, 'get', K>
   post<K extends keyof T['post']>(
     resource: K,
-    data: any,
-    options?: Omit<AxiosRequestConfig, 'params'> &
-      (T['post'] extends undefined
-        ? {}
-        : Params<NonNullable<T['post']>[K]> extends undefined
-        ? {}
-        : {
-            params: {
-              [R in NonNullable<Params<NonNullable<T['post']>[K]>>]: string
-            }
-          })
+    data: T['post'] extends undefined ? never : Body<NonNullable<T['post']>[K]>,
+    options?: Omit<AxiosRequestConfig, 'params'> & PostOptions<T, K>
   ): ApiFuture<T, 'post', K>
 }
 
