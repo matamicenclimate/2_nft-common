@@ -17,7 +17,7 @@ export type core = {
   }
   post: {
     'opt-in': Post<{ targetAccount: string }, { assetId: number }>
-    'create-auction': Post<{ appIndex: number }, { assetId: number }>
+    'create-auction': Post<{ appIndex: number }, { assetId: number, creatorWallet: string, causePercentage: string }>
     'activate-auction': Post<{ appId: number; assetId: number }, undefined>
     ipfs: Post<Nft, FormData>
   }
