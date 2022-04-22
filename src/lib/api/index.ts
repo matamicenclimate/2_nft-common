@@ -87,6 +87,12 @@ export type Body<A extends AnyPost> = A['body']
 export type Response<A extends AnyEndpoint> = A['response']
 
 /**
+ * An alias that wraps a response into a promise, making
+ * it easier to read and write.
+ */
+export type AsyncResponse<A extends AnyEndpoint> = Promise<Response<A>>
+
+/**
  * Extracts the query parameters of the GET request.
  */
 export type Query<A extends AnyGet> = A['query']
