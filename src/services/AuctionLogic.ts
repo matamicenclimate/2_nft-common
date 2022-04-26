@@ -36,17 +36,17 @@ export class AuctionLogic {
     reserve: number,
     bidIncrement: number,
     account: algosdk.Account,
-    endTime: number,
     causeWallet: string,
     creatorWallet: string,
     causePercentage: number,
-    creatorPercentage: number
+    creatorPercentage: number,
+    startDate: string,
+    endDate: string
   ): Promise<AuctionCreationResult> {
     const approval = await this.programs.auctionApprovalProgram
     const clear = await this.programs.clearStateProgram
-    const now = Date.now() / 1000
-    const start = Math.floor(now + 60)
-    const end = Math.trunc(start + endTime)
+    const start = Math.floor((Date.parse(startDate) / 1000) + 60)
+    const end = Math.floor(Date.parse(endDate) / 1000)
     console.warn(`Auction start in ${start} and end on ${end}`)
     console.warn(`creatorAddress ${creatorWallet} and causeAddress on ${causeWallet}`)
     console.warn(`causePercentage ${causePercentage} and creatorPercentage on ${creatorPercentage}`)
