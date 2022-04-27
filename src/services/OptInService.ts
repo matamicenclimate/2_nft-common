@@ -33,13 +33,14 @@ export default class OptInService {
   async createOptInRequest(
     assetId: number,
     sender: string = this.walletProvider.account.addr,
-    recipient = sender
+    recipient = sender,
+    ammout = 0
   ) {
     const params = await this.client.getTransactionParams().do()
     const revocationTarget = undefined
     const closeRemainderTo = undefined
     const note = undefined
-    const amount = 0
+    const amount = ammout
     console.log(`[OPT IN]\nsender = ${sender}\nrecipient = ${recipient}`)
     return await OptInService.makeAssetTransferTransaction(
       sender,
@@ -60,12 +61,14 @@ export default class OptInService {
     assetId: number,
     sender: string = this.walletProvider.account.addr,
     recipient = sender,
-    signer?: algosdk.Account
+    signer?: algosdk.Account,
+    ammout = 0
   ) {
     const optInTxUnsigned = await this.createOptInRequest(
       assetId,
       sender,
-      recipient
+      recipient,
+      ammout
     )
     return await this.op.signAndConfirm(optInTxUnsigned, undefined, signer)
   }
