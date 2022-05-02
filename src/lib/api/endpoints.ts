@@ -19,7 +19,13 @@ export type core = {
     'opt-in': Post<{ targetAccount: string }, { assetId: number }>
     'create-auction': Post<
       { appIndex: number },
-      { assetId: number; creatorWallet: string; causePercentage: number, startDate: string, endDate: string }
+      {
+        assetId: number
+        creatorWallet: string
+        causePercentage: number
+        startDate: string
+        endDate: string
+      }
     >
     'activate-auction': Post<{ appId: number; assetId: number }, undefined>
     ipfs: Post<Nft, FormData>
@@ -31,7 +37,13 @@ export type core = {
  */
 export type causes = {
   get: {
-    causes: Get<'causes', Cause[]>
+    causes: Get<Cause[]>
+    'causes/config': Get<{
+      percentages: {
+        marketplace: number
+        cause: number
+      }
+    }>
   }
   post: {
     causes: Post<

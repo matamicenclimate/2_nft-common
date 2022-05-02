@@ -45,11 +45,15 @@ export class AuctionLogic {
   ): Promise<AuctionCreationResult> {
     const approval = await this.programs.auctionApprovalProgram
     const clear = await this.programs.clearStateProgram
-    const start = Math.floor((Date.parse(startDate) / 1000) + 60)
+    const start = Math.floor(Date.parse(startDate) / 1000 + 60)
     const end = Math.floor(Date.parse(endDate) / 1000)
     console.warn(`Auction start in ${start} and end on ${end}`)
-    console.warn(`creatorAddress ${creatorWallet} and causeAddress on ${causeWallet}`)
-    console.warn(`causePercentage ${causePercentage} and creatorPercentage on ${creatorPercentage}`)
+    console.warn(
+      `creatorAddress ${creatorWallet} and causeAddress on ${causeWallet}`
+    )
+    console.warn(
+      `causePercentage ${causePercentage} and creatorPercentage on ${creatorPercentage}`
+    )
     const args: Uint8Array[] = [
       algosdk.decodeAddress(this.account.account.addr).publicKey,
       assetId.toBytes(8, 'big'),
@@ -61,7 +65,7 @@ export class AuctionLogic {
       algosdk.decodeAddress(causeWallet).publicKey,
       creatorPercentage.toBytes(8, 'big'),
       causePercentage.toBytes(8, 'big'),
-      algosdk.decodeAddress(account.addr).publicKey
+      algosdk.decodeAddress(account.addr).publicKey,
     ]
     const client = this.client.client
     const params = await client.getTransactionParams().do()
@@ -135,6 +139,21 @@ export class AuctionLogic {
     return await this.makeTransferToAccount(address, assetId, note)
   }
 
+  /** The fee value. */
+  get fee() {
+    return algosdk.ALGORAND_MIN_TX_FEE
+  }
+
+  /** The amount of transactions that are required for a single mint. */
+  get baseMintTxCount() {
+    return 4
+  }
+
+  /** The amount of transactions that **may** be required for returning the asset to the creator. */
+  get depositTxCount() {
+    return 4
+  }
+
   /**
    * Makes the asset to be transferred from this running account into the
    * app's account.
@@ -147,6 +166,15 @@ export class AuctionLogic {
     const client = this.client.client
     const suggestedParams = await client.getTransactionParams().do()
     const account = this.account.account.addr
+    // This represents the extra fees that might be deduced in the future (total).
+    const payGasTxn = await algosdk.makePaymentTxnWithSuggestedParamsFromObject(
+      {
+        from: account,
+        to: address,
+        amount: this.fee * (this.baseMintTxCount + this.depositTxCount),
+        suggestedParams,
+      }
+    )
     const fundNftTxn =
       await algosdk.makeAssetTransferTxnWithSuggestedParamsFromObject({
         from: account,
@@ -156,6 +184,9 @@ export class AuctionLogic {
         suggestedParams,
         note,
       })
-    return await this.op.signAndConfirm(fundNftTxn)
+    const txns = algosdk.assignGroupID([fundNftTxn, payGasTxn])
+    const signedTxn = await this.signer.signTransaction(txns)
+    const { txId } = await client.sendRawTransaction(signedTxn).do()
+    return txId
   }
 }
