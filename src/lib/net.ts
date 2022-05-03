@@ -15,26 +15,50 @@ export class RetryError extends Error {
   }
 }
 
+const using = <A>(value: A, fn: (a: A) => A) => fn(value)
+/** The backoff exponential base. */
+export let backoffBase = 2
+/** The backoff algorithm time cap. */
+export let backoffMaxTime = 10000
+/** Computes the maximum backoff time. */
+export const backoffTime = (attempt: number) =>
+  Math.min(backoffMaxTime, backoffBase * 2 * attempt)
+/** Generates a jittered, exponential backoff. */
+export const btJitter = (attempt: number) =>
+  using(backoffTime(attempt), it => it * Math.random() + it / 2)
+
 /**
  * Returns a promise that will resolve or fail after
  * the nth retry, in case of failure.
  */
 export async function retrying<A>(
   req: Promise<AxiosResponse<A>>,
+  retries?: number
+): Promise<AxiosResponse<A>>
+/** @internal */
+export async function retrying<A>(
+  req: Promise<AxiosResponse<A>>,
   retries: number,
-  total = retries,
-  errors: Error[] = []
+  errors: Error[],
+  attempt: number
+): Promise<AxiosResponse<A>>
+export async function retrying<A>(
+  req: Promise<AxiosResponse<A>>,
+  retries: number = Number.POSITIVE_INFINITY,
+  errors: Error[] = [],
+  attempt = 0
 ): Promise<AxiosResponse<A>> {
   try {
     return await req
   } catch (err) {
     errors.push(err as Error)
+
     if (errorIsAxios(err)) {
-      if (retries <= 0) {
-        throw new RetryError(`Request failed after ${total} retries.`, errors)
+      if (attempt >= retries) {
+        throw new RetryError(`Request failed many retries.`, errors)
       }
-      console.warn(`Request ${err.config.url} failed ${retries}/${total}`)
-      return retrying(axios(err.config), retries - 1, total, errors)
+      await new Promise(r => setTimeout(r, btJitter(attempt)))
+      return retrying(axios(err.config), retries, errors, attempt + 1)
     } else {
       throw new RetryError(`Unexpected mid-flight failure`, errors)
     }
