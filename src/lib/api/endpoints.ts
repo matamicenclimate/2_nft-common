@@ -3,7 +3,7 @@
 */
 
 import { Get, Post } from '.'
-import { Asset, Cause, Nft } from './entities'
+import { Cause, Nft, RekeyAccountRecord } from './entities'
 
 /**
  * Endpoints for the core microservice.
@@ -11,7 +11,7 @@ import { Asset, Cause, Nft } from './entities'
 export type core = {
   get: {
     nfts: Get<Nft[]>
-    assets: Get<{ assets: Asset[] }, { wallet?: string }>
+    assets: Get<{ assets: RekeyAccountRecord[] }, { wallet?: string }>
     'asset/:id': Get<{ value: Nft }, undefined, 'id'>
     healthz: Get<{ status: 'ok' }>
   }
