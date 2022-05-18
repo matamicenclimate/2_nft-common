@@ -52,3 +52,17 @@ export interface Asset {
   /** @deprecated */
   'opted-in-at-round'?: number
 }
+
+export interface RekeyAccountRecord {
+  id: string
+  rekeyWallet: string
+  marketplaceWallet: string
+  assetId: number
+  applicationId: number
+  isClosedAuction: boolean
+  auctionStartDate: string
+  auctionEndDate: string
+  createdAt: Date
+  updatedAt: Date
+  deletedAt?: Date
+}
