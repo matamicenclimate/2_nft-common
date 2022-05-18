@@ -42,9 +42,9 @@ export interface Nft {
 }
 
 export interface Asset {
-  amount: number
-  'asset-id': number
-  deleted: boolean
-  'is-frozen': boolean
-  'opted-in-at-round': number
+  amount?: number
+  assetId: number
+  deleted?: boolean
+  'is-frozen'?: boolean
+  'opted-in-at-round'?: number
 }
