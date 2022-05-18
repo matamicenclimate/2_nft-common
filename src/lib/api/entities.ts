@@ -55,6 +55,7 @@ export interface Asset {
 
 export interface RekeyAccountRecord {
   id: string
+  assetUrl: string
   rekeyWallet: string
   marketplaceWallet: string
   assetId: number
