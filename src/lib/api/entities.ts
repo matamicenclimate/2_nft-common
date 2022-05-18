@@ -41,18 +41,6 @@ export interface Nft {
   creator: string
 }
 
-export interface Asset {
-  assetId: number
-  /** @deprecated */
-  amount?: number
-  /** @deprecated */
-  deleted?: boolean
-  /** @deprecated */
-  'is-frozen'?: boolean
-  /** @deprecated */
-  'opted-in-at-round'?: number
-}
-
 export interface RekeyAccountRecord {
   id: string
   assetUrl: string
