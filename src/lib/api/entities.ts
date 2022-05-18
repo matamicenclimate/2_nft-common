@@ -43,6 +43,7 @@ export interface Nft {
 
 export interface RekeyAccountRecord {
   id: string
+  cause: string
   assetUrl: string
   rekeyWallet: string
   marketplaceWallet: string
