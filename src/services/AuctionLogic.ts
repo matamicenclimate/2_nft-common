@@ -7,6 +7,7 @@ import * as TransactionSigner from './TransactionSigner'
 import AlgodClientProvider from './AlgodClientProvider'
 import { TransactionOperation } from './TransactionOperation'
 import '../lib/binary/extension'
+import { failure, Result, success } from '../lib/Result'
 
 @Service()
 export class AuctionLogic {
@@ -162,7 +163,7 @@ export class AuctionLogic {
     address: string,
     assetId: number,
     note?: Uint8Array
-  ) {
+  ): Promise<Result<{ txId: string }>> {
     const client = this.client.client
     const suggestedParams = await client.getTransactionParams().do()
     const account = this.account.account.addr
@@ -186,7 +187,19 @@ export class AuctionLogic {
       })
     const txns = algosdk.assignGroupID([fundNftTxn, payGasTxn])
     const signedTxn = await this.signer.signTransaction(txns)
-    const { txId } = await client.sendRawTransaction(signedTxn).do()
-    return txId
+    {
+      let attempt = 0
+      for (;;) {
+        try {
+          const { txId } = await client.sendRawTransaction(signedTxn).do()
+          return success({ txId })
+        } catch (err) {
+          console.warn('Failed to send transaction (asset transfer):', err)
+          if (attempt++ > 3) {
+            return failure(err as Error)
+          }
+        }
+      }
+    }
   }
 }
