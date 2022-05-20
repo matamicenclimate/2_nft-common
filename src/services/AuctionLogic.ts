@@ -7,7 +7,7 @@ import * as TransactionSigner from './TransactionSigner'
 import AlgodClientProvider from './AlgodClientProvider'
 import { TransactionOperation } from './TransactionOperation'
 import '../lib/binary/extension'
-import { Failure, Result, Success } from '../lib/Result'
+import { failure, Result, success } from '../lib/Result'
 
 @Service()
 export class AuctionLogic {
@@ -192,11 +192,11 @@ export class AuctionLogic {
       for (;;) {
         try {
           const { txId } = await client.sendRawTransaction(signedTxn).do()
-          return new Success({ txId })
+          return success({ txId })
         } catch (err) {
           console.warn('Failed to send transaction (asset transfer):', err)
           if (attempt++ > 3) {
-            return new Failure(err as Error)
+            return failure(err as Error)
           }
         }
       }
