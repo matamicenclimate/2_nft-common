@@ -2,7 +2,13 @@
   This module contains data about the entities used in API
   transactions (Parameters and responses).
 */
-
+export interface Asset {
+  assetId: number
+  amount?: number
+  deleted?: boolean
+  'is-frozen'?: boolean
+  'opted-in-at-round'?: number
+}
 export interface Cause {
   title: string
   description: string
