@@ -3,7 +3,7 @@
   transactions (Parameters and responses).
 */
 export interface Asset {
-  assetId: number
+  'asset-id': number
   amount?: number
   deleted?: boolean
   'is-frozen'?: boolean
