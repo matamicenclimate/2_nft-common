@@ -1,6 +1,7 @@
 import Container, { Inject, Service } from 'typedi'
 import { AuctionCreationResult } from '../lib/AuctionCreationResult'
 import * as AVMProgramProvider from './AVMProgramProvider'
+import * as AVMDirectListingProgramProvider from './AVMDirectListingProgramProvider'
 import * as algosdk from 'algosdk'
 import * as WalletAccountProvider from './WalletAccountProvider'
 import * as TransactionSigner from './TransactionSigner'
@@ -12,6 +13,7 @@ import { failure, Result, success } from '../lib/Result'
 @Service()
 export class AuctionLogic {
   readonly programs: AVMProgramProvider.type
+  readonly directListingPrograms: AVMDirectListingProgramProvider.type
   readonly account: WalletAccountProvider.type
   readonly signer: TransactionSigner.type
   readonly client: AlgodClientProvider
@@ -70,7 +72,7 @@ export class AuctionLogic {
     ]
     const client = this.client.client
     const params = await client.getTransactionParams().do()
-    console.log(`Creating smart app, bound to ${account.addr}...`)
+    console.log(`Creating smart app for auction, bound to ${account.addr}...`)
     const txn = await algosdk.makeApplicationCreateTxnFromObject({
       from: account.addr,
       suggestedParams: params,
@@ -86,15 +88,65 @@ export class AuctionLogic {
     const { txId, result } =
       await this.op.signAndConfirm<AuctionCreationResult>(txn)
     console.log(
-      `Application creation TX: https://testnet.algoexplorer.io/tx/${txId}`
+      `Auction Application creation TX: https://testnet.algoexplorer.io/tx/${txId}`
     )
     return result
   }
-
+  
+  async createDirectListing(
+    assetId: number,
+    reserve: number,
+    bidIncrement: number,
+    account: algosdk.Account,
+    causeWallet: string,
+    creatorWallet: string,
+    causePercentage: number,
+    creatorPercentage: number,
+  ): Promise<AuctionCreationResult> {
+    const approval = await this.directListingPrograms.directListingApprovalProgram
+    const clear = await this.directListingPrograms.clearStateProgram
+    console.warn(
+      `creatorAddress ${creatorWallet} and causeAddress on ${causeWallet}`
+    )
+    console.warn(
+      `causePercentage ${causePercentage} and creatorPercentage on ${creatorPercentage}`
+    )
+    const args: Uint8Array[] = [
+      algosdk.decodeAddress(this.account.account.addr).publicKey,
+      assetId.toBytes(8, 'big'),
+      reserve.toBytes(8, 'big'),
+      algosdk.decodeAddress(creatorWallet).publicKey,
+      algosdk.decodeAddress(causeWallet).publicKey,
+      creatorPercentage.toBytes(8, 'big'),
+      causePercentage.toBytes(8, 'big'),
+      algosdk.decodeAddress(account.addr).publicKey,
+    ]
+    const client = this.client.client
+    const params = await client.getTransactionParams().do()
+    console.log(`Creating smart app for direct listing, bound to ${account.addr}...`)
+    const txn = await algosdk.makeApplicationCreateTxnFromObject({
+      from: account.addr,
+      suggestedParams: params,
+      onComplete: algosdk.OnApplicationComplete.NoOpOC,
+      approvalProgram: approval,
+      clearProgram: clear,
+      numGlobalByteSlices: 5,
+      numGlobalInts: 6,
+      numLocalByteSlices: 0,
+      numLocalInts: 0,
+      appArgs: args,
+    })
+    const { txId, result } =
+      await this.op.signAndConfirm<AuctionCreationResult>(txn)
+    console.log(
+      `Direct Listing Application creation TX: https://testnet.algoexplorer.io/tx/${txId}`
+    )
+    return result
+  }
   /**
    * Funds the given auction (The app ID MUST be an auction app!).
    */
-  async fundAuction(appIndex: number) {
+  async fundListing(appIndex: number) {
     const client = this.client.client
     const suggestedParams = await client.getTransactionParams().do()
     const account = this.account.account.addr
