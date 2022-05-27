@@ -21,6 +21,7 @@ export class AuctionLogic {
 
   constructor() {
     this.programs = AVMProgramProvider.get()
+    this.directListingPrograms = AVMDirectListingProgramProvider.get()
     this.account = WalletAccountProvider.get()
     this.signer = TransactionSigner.get()
     this.client = Container.get(AlgodClientProvider)
