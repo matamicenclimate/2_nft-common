@@ -28,6 +28,14 @@ export type core = {
         endDate: string
       }
     >
+    'direct-listing': Post<
+      { appIndex: number },
+      {
+        assetId: number
+        creatorWallet: string
+        causePercentage: number
+      }
+    >
     'activate-auction': Post<{ appId: number; assetId: number }, undefined>
     ipfs: Post<Nft, FormData>
   }
