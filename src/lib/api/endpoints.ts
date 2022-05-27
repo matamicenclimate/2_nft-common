@@ -36,6 +36,7 @@ export type core = {
         causePercentage: number
       }
     >
+    'sell-asset/:id': Post<undefined, undefined, 'id'>
     'activate-auction': Post<{ appId: number; assetId: number }, undefined>
     ipfs: Post<Nft, FormData>
   }
