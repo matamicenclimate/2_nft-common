@@ -93,7 +93,7 @@ export class AuctionLogic {
     )
     return result
   }
-  
+
   async createDirectListing(
     assetId: number,
     reserve: number,
@@ -102,9 +102,10 @@ export class AuctionLogic {
     causeWallet: string,
     creatorWallet: string,
     causePercentage: number,
-    creatorPercentage: number,
+    creatorPercentage: number
   ): Promise<AuctionCreationResult> {
-    const approval = await this.directListingPrograms.directListingApprovalProgram
+    const approval = await this.directListingPrograms
+      .directListingApprovalProgram
     const clear = await this.directListingPrograms.clearStateProgram
     console.warn(
       `creatorAddress ${creatorWallet} and causeAddress on ${causeWallet}`
@@ -124,7 +125,9 @@ export class AuctionLogic {
     ]
     const client = this.client.client
     const params = await client.getTransactionParams().do()
-    console.log(`Creating smart app for direct listing, bound to ${account.addr}...`)
+    console.log(
+      `Creating smart app for direct listing, bound to ${account.addr}...`
+    )
     const txn = await algosdk.makeApplicationCreateTxnFromObject({
       from: account.addr,
       suggestedParams: params,
@@ -211,6 +214,7 @@ export class AuctionLogic {
   /**
    * Makes the asset to be transferred from this running account into the
    * app's account.
+   * @TODO Move to a more abstract service (blockchain-wide operations).
    */
   async makeTransferToAccount(
     address: string,
