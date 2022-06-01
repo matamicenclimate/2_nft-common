@@ -39,3 +39,15 @@ export type AuctionAppState = {
   creator: Uint8Array
   rekey: Uint8Array
 }
+
+export type DirectSellAppState = {
+  end: number
+  nft_id: number
+  bid_account: Uint8Array
+  bid_amount?: number
+  reserve_amount: number
+  seller: Uint8Array
+  cause: Uint8Array
+  creator: Uint8Array
+  rekey: Uint8Array
+}
