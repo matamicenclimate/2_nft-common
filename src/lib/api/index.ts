@@ -67,6 +67,12 @@ export type Post<
   body: Body
 }
 
+export type Delete<
+  Res,
+  Params extends string | undefined = undefined,
+  Head = undefined
+> = Endpoint<'DELETE', Res, Params, Head>
+
 export type AnyEndpoint = Endpoint<
   HttpVerb,
   unknown,

@@ -2,7 +2,7 @@
   This contains data about endpoints shared between client and server.
 */
 
-import { Get, Post } from '.'
+import { Get, Post, Delete } from '.'
 import { Asset, Cause, Nft, RekeyAccountRecord } from './entities'
 
 /**
@@ -36,7 +36,7 @@ export type core = {
         causePercentage: number
       }
     >
-    'sell-asset/:id': Post<undefined, undefined, 'id'>
+    'sell-asset/:appId': Delete<undefined, 'appId'>
     'activate-auction': Post<{ appId: number; assetId: number }, undefined>
     ipfs: Post<Nft, FormData>
   }
