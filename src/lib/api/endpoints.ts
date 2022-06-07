@@ -37,9 +37,11 @@ export type core = {
         causePercentage: number
       }
     >
-    'sell-asset/:appId': Delete<undefined, 'appId'>
     'activate-auction': Post<{ appId: number; assetId: number }, undefined>
     ipfs: Post<Nft, FormData>
+  }
+  delete: {
+    'sell-asset/:appId': Delete<undefined, 'appId'>
   }
 }
 
