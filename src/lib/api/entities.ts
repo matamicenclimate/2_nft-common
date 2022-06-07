@@ -66,3 +66,7 @@ export interface RekeyAccountRecord {
   deletedAt?: Date
   type: RekeyAccountType
 }
+
+export interface NftAssetInfo {
+  assetInfo: RekeyAccountRecord
+}
