@@ -47,6 +47,9 @@ export interface Nft {
   creator: string
 }
 
+/** A discriminator field that tells us about the type of asset sale (What mode). */
+export type RekeyAccountType = 'direct-listing' | 'create-auction'
+
 export interface RekeyAccountRecord {
   id: string
   cause: string
@@ -61,4 +64,5 @@ export interface RekeyAccountRecord {
   createdAt: Date
   updatedAt: Date
   deletedAt?: Date
+  type: RekeyAccountType
 }
