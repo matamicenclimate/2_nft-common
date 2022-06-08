@@ -9,6 +9,7 @@ import AlgodClientProvider from './AlgodClientProvider'
 import { TransactionOperation } from './TransactionOperation'
 import '../lib/binary/extension'
 import { failure, Result, success } from '../lib/Result'
+import { TransactionLike } from 'algosdk'
 
 @Service()
 export class AuctionLogic {
@@ -151,6 +152,11 @@ export class AuctionLogic {
    * Funds the given auction (The app ID MUST be an auction app!).
    */
   async fundListing(appIndex: number) {
+    const { amount, fundTxn } = await this.fundListingWithoutConfirm(appIndex)
+    return { amount, result: await this.op.signAndConfirm(fundTxn) }
+  }
+
+  async fundListingWithoutConfirm(appIndex: number) {
     const client = this.client.client
     const suggestedParams = await client.getTransactionParams().do()
     const account = this.account.account.addr
@@ -162,17 +168,22 @@ export class AuctionLogic {
       amount,
       suggestedParams,
     })
-    return { amount, result: await this.op.signAndConfirm(fundTxn) }
+    return { amount, fundTxn }
   }
 
   /**
    * Calls the 'setup' procedure from the provided app (id).
    */
   async makeAppCallSetupProc(appIndex: number, assetId: number) {
+    const appCallTxn = await this.makeAppCallSetupProcWithoutConfirm(appIndex, assetId)
+    return await this.op.signAndConfirm(appCallTxn)
+  }
+
+  async makeAppCallSetupProcWithoutConfirm(appIndex: number, assetId: number) {
     const client = this.client.client
     const suggestedParams = await client.getTransactionParams().do()
     const account = this.account.account.addr
-    const appCallTxn = await algosdk.makeApplicationCallTxnFromObject({
+    return  await algosdk.makeApplicationCallTxnFromObject({
       from: account,
       appIndex,
       onComplete: algosdk.OnApplicationComplete.NoOpOC,
@@ -180,7 +191,6 @@ export class AuctionLogic {
       foreignAssets: [assetId],
       suggestedParams,
     })
-    return await this.op.signAndConfirm(appCallTxn)
   }
 
   /**
@@ -220,7 +230,7 @@ export class AuctionLogic {
     address: string,
     assetId: number,
     note?: Uint8Array
-  ): Promise<Result<{ txId: string }>> {
+  ): Promise<Result<TransactionLike >> {
     const client = this.client.client
     const suggestedParams = await client.getTransactionParams().do()
     const account = this.account.account.addr
@@ -248,8 +258,8 @@ export class AuctionLogic {
       let attempt = 0
       for (;;) {
         try {
-          const { txId } = await client.sendRawTransaction(signedTxn).do()
-          return success({ txId })
+          const tx = await client.sendRawTransaction(signedTxn).do()
+          return success(tx)
         } catch (err) {
           console.warn('Failed to send transaction (asset transfer):', err)
           if (attempt++ > 3) {

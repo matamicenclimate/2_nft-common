@@ -57,26 +57,34 @@ export class TransactionOperation {
    * @returns
    */
   async pay(from: algosdk.Account, to: string, amount: number) {
+    const tx = await this.payTransactionWithoutConfirmation(from, to, amount)
+    return await this.signAndConfirm(tx, undefined, from)
+  }
+
+  async payTransactionWithoutConfirmation(from: algosdk.Account, to: string, amount: number) {
     const suggestedParams = await this.client.client.getTransactionParams().do()
-    const tx = await algosdk.makePaymentTxnWithSuggestedParamsFromObject({
+    return await algosdk.makePaymentTxnWithSuggestedParamsFromObject({
       from: from.addr,
       to,
       amount,
       suggestedParams,
     })
-    return await this.signAndConfirm(tx, undefined, from)
   }
 
   async closeReminderTransaction(marketplaceAccount: algosdk.Account, rekeyAccount: string) {
+    const tx = await this.closeReminderTransactionWithoutConfirm(marketplaceAccount, rekeyAccount) 
+    return await this.signAndConfirm(tx, undefined, marketplaceAccount)
+  }
+
+  async closeReminderTransactionWithoutConfirm(marketplaceAccount: algosdk.Account, rekeyAccount: string) {
     const suggestedParams = await this.client.client.getTransactionParams().do()
-    const tx = await algosdk.makePaymentTxnWithSuggestedParamsFromObject({
+    return await algosdk.makePaymentTxnWithSuggestedParamsFromObject({
       from: rekeyAccount,
       to: marketplaceAccount.addr,
       closeRemainderTo: marketplaceAccount.addr,
       amount: 1000,
       suggestedParams,
     })
-    return await this.signAndConfirm(tx, undefined, marketplaceAccount)
   }
 
   /**
