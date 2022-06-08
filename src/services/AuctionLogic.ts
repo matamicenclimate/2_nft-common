@@ -206,6 +206,15 @@ export class AuctionLogic {
     return await this.makeTransferToAccount(address, assetId, note)
   }
 
+  async makeTransferToAppWithoutConfirm(
+    appIndex: number,
+    assetId: number,
+    note?: Uint8Array
+  ) {
+    const address = algosdk.getApplicationAddress(appIndex)
+    return await this.makeTransferToAccountWithoutConfirm(address, assetId, note)
+  }
+
   /** The fee value. */
   get fee() {
     return algosdk.ALGORAND_MIN_TX_FEE
@@ -232,6 +241,31 @@ export class AuctionLogic {
     note?: Uint8Array
   ): Promise<Result<TransactionLike >> {
     const client = this.client.client
+    const transactions = await this.makeTransferToAccountWithoutConfirm(address, assetId, note)
+    const txns = algosdk.assignGroupID(transactions)
+    const signedTxn = await this.signer.signTransaction(txns)
+    {
+      let attempt = 0
+      for (;;) {
+        try {
+          const tx = await client.sendRawTransaction(signedTxn).do()
+          return success(tx)
+        } catch (err) {
+          console.warn('Failed to send transaction (asset transfer):', err)
+          if (attempt++ > 3) {
+            return failure(err as Error)
+          }
+        }
+      }
+    }
+  }
+
+  async makeTransferToAccountWithoutConfirm(
+    address: string,
+    assetId: number,
+    note?: Uint8Array
+  ): Promise<TransactionLike[]> {
+    const client = this.client.client
     const suggestedParams = await client.getTransactionParams().do()
     const account = this.account.account.addr
     // This represents the extra fees that might be deduced in the future (total).
@@ -252,21 +286,6 @@ export class AuctionLogic {
         suggestedParams,
         note,
       })
-    const txns = algosdk.assignGroupID([fundNftTxn, payGasTxn])
-    const signedTxn = await this.signer.signTransaction(txns)
-    {
-      let attempt = 0
-      for (;;) {
-        try {
-          const tx = await client.sendRawTransaction(signedTxn).do()
-          return success(tx)
-        } catch (err) {
-          console.warn('Failed to send transaction (asset transfer):', err)
-          if (attempt++ > 3) {
-            return failure(err as Error)
-          }
-        }
-      }
-    }
+    return [payGasTxn, fundNftTxn]
   }
 }
