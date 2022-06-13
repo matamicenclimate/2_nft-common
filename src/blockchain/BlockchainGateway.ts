@@ -1,5 +1,10 @@
-import Payment from './Payment'
+import PaymentFeature from './features/PaymentFeature'
 
-export default interface BlockchainGateway {
-  pay(): Promise<Payment>
+/**
+ * Abstract blockchain gateway.
+ */
+export default interface BlockchainGateway
+  extends Partial<PaymentFeature>,
+    Partial<{}> {
+  get id(): string
 }

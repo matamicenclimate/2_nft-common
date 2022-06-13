@@ -1,11 +1,8 @@
 import BlockchainGateway from '../BlockchainGateway'
-import OptInResult from './OptInResult'
-
-export interface OptInParams {}
+import OptInFeature from '../features/OptInFeature'
+import PaymentFeature from '../features/PaymentFeature'
 
 /**
- * Algorand blockchain-oriented gateway.
+ * Algorand blockchain-oriented gateway, enables features from algorand.
  */
-export default interface AlgorandGateway extends BlockchainGateway {
-  optIn(params: OptInParams): Promise<OptInResult>
-}
+export type AlgorandGateway = BlockchainGateway & PaymentFeature & OptInFeature
