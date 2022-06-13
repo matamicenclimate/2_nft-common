@@ -10,6 +10,7 @@ import { TransactionOperation } from './TransactionOperation'
 import '../lib/binary/extension'
 import { failure, Result, success } from '../lib/Result'
 import { TransactionLike } from 'algosdk'
+import directListingAbi from '@common/abi/direct-listing.abi'
 
 @Service()
 export class AuctionLogic {
@@ -175,7 +176,10 @@ export class AuctionLogic {
    * Calls the 'setup' procedure from the provided app (id).
    */
   async makeAppCallSetupProc(appIndex: number, assetId: number) {
-    const appCallTxn = await this.makeAppCallSetupProcWithoutConfirm(appIndex, assetId)
+    const appCallTxn = await this.makeAppCallSetupProcWithoutConfirm(
+      appIndex,
+      assetId
+    )
     return await this.op.signAndConfirm(appCallTxn)
   }
 
@@ -183,11 +187,11 @@ export class AuctionLogic {
     const client = this.client.client
     const suggestedParams = await client.getTransactionParams().do()
     const account = this.account.account.addr
-    return  await algosdk.makeApplicationCallTxnFromObject({
+    return await algosdk.makeApplicationCallTxnFromObject({
       from: account,
       appIndex,
       onComplete: algosdk.OnApplicationComplete.NoOpOC,
-      appArgs: ['setup'.toBytes()],
+      appArgs: [directListingAbi.getMethodByName('on_setup').getSelector()],
       foreignAssets: [assetId],
       suggestedParams,
     })
@@ -212,7 +216,11 @@ export class AuctionLogic {
     note?: Uint8Array
   ) {
     const address = algosdk.getApplicationAddress(appIndex)
-    return await this.makeTransferToAccountWithoutConfirm(address, assetId, note)
+    return await this.makeTransferToAccountWithoutConfirm(
+      address,
+      assetId,
+      note
+    )
   }
 
   /** The fee value. */
@@ -239,9 +247,13 @@ export class AuctionLogic {
     address: string,
     assetId: number,
     note?: Uint8Array
-  ): Promise<Result<TransactionLike >> {
+  ): Promise<Result<TransactionLike>> {
     const client = this.client.client
-    const transactions = await this.makeTransferToAccountWithoutConfirm(address, assetId, note)
+    const transactions = await this.makeTransferToAccountWithoutConfirm(
+      address,
+      assetId,
+      note
+    )
     const txns = algosdk.assignGroupID(transactions)
     const signedTxn = await this.signer.signTransaction(txns)
     {
