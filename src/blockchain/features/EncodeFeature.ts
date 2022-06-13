@@ -6,9 +6,9 @@ export interface EncodeParameters {
   object: object
 }
 
-/**
- * Takes an object, serializes it into a binary format.
- */
 export interface EncodeFeature {
+  /**
+   * Takes an object, serializes it into a binary format.
+   */
   encodeObject(params: EncodeParameters): Promise<EncodeResult>
 }

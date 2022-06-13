@@ -7,6 +7,14 @@ import { OptInParameters, OptInResult } from '../../features/OptInFeature'
 import { PaymentParameters, PaymentResult } from '../../features/PaymentFeature'
 import { AlgorandGateway, ALGORAND_GATEWAY_ID } from '../AlgorandGateway'
 import algosdk from 'algosdk'
+import {
+  CreateAssetParameters,
+  CreateAssetResult,
+} from '../../features/CreateAssetFeature'
+import {
+  SignOperationParameters,
+  SignOperationResult,
+} from '../../features/SignOperation'
 
 class AlgosdkAlgorandGatewayFactory implements BlockchainGatewayFactory {
   provide(): BlockchainGateway {
@@ -15,6 +23,14 @@ class AlgosdkAlgorandGatewayFactory implements BlockchainGatewayFactory {
 }
 
 class AlgosdkAlgorandGateway implements AlgorandGateway {
+  async signOperation(
+    params: SignOperationParameters
+  ): Promise<SignOperationResult> {
+    throw new Error('Method not implemented.')
+  }
+  async createAsset(params: CreateAssetParameters): Promise<CreateAssetResult> {
+    throw new Error('Method not implemented.')
+  }
   async encodeObject(params: EncodeParameters): Promise<EncodeResult> {
     return {
       payload: algosdk.encodeObj(params.object),
@@ -24,10 +40,10 @@ class AlgosdkAlgorandGateway implements AlgorandGateway {
   get id(): typeof ALGORAND_GATEWAY_ID {
     return ALGORAND_GATEWAY_ID
   }
-  pay(params: PaymentParameters): Promise<PaymentResult> {
+  async pay(params: PaymentParameters): Promise<PaymentResult> {
     throw new Error('Method not implemented.')
   }
-  optIn(params: OptInParameters): Promise<OptInResult> {
+  async optIn(params: OptInParameters): Promise<OptInResult> {
     throw new Error('Method not implemented.')
   }
 }
