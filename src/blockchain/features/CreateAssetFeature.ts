@@ -1,11 +1,21 @@
-import { UnsignedOperation } from '@common/src/Operation'
+import { UnsignedOperation } from '../Operation'
 
 export interface CreateAssetResult {
-  transaction: UnsignedOperation
+  operation: UnsignedOperation
 }
 
 export interface CreateAssetParameters {
-  operation: UnsignedOperation
+  owner: string
+  amount: number
+  name: string
+  url: string
+  fraction?: number
+  accounts?: Record<string, string>
+  metadata?: {
+    payload: object
+    checksum?: Uint8Array
+  }
+  frozen?: boolean
 }
 
 export interface CreateAssetFeature {

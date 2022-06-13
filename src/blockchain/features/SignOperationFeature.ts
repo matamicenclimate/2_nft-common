@@ -1,4 +1,4 @@
-import { SignedOperation, UnsignedOperation } from '@common/src/Operation'
+import { SignedOperation, UnsignedOperation } from '../Operation'
 
 export interface SignOperationParameters {
   operation: UnsignedOperation
