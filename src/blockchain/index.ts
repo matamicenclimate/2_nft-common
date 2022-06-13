@@ -6,7 +6,8 @@ import BlockchainGatewayFactory from './BlockchainGatewayFactory'
 export type {
   PaymentResult,
   PaymentParameters,
-  BlockchainGatewayProvider,
   BlockchainGatewayFactory,
   BlockchainGateway,
 }
+
+export { BlockchainGatewayProvider }
