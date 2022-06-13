@@ -10,7 +10,7 @@ import { TransactionOperation } from './TransactionOperation'
 import '../lib/binary/extension'
 import { failure, Result, success } from '../lib/Result'
 import { TransactionLike } from 'algosdk'
-import directListingAbi from '@common/abi/direct-listing.abi'
+import directListingAbi from '../abi/direct-listing.abi'
 
 @Service()
 export class AuctionLogic {
