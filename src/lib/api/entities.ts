@@ -48,12 +48,12 @@ export interface Nft {
 }
 
 /** A discriminator field that tells us about the type of asset sale (What mode). */
-export type RekeyAccountType = 'direct-listing' | 'create-auction'
+export type RekeyAccountType = 'direct-listing' | 'create-auction' | undefined
 
 export interface RekeyAccountRecord {
   id: string
   cause: string
-  assetUrl: string
+  assetUrl?: string | undefined
   rekeyWallet: string
   marketplaceWallet: string
   assetId: number
@@ -64,7 +64,7 @@ export interface RekeyAccountRecord {
   createdAt: Date
   updatedAt: Date
   deletedAt?: Date
-  type: RekeyAccountType
+  type?: RekeyAccountType
 }
 
 export interface NftAssetInfo {

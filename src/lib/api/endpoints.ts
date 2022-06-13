@@ -14,7 +14,7 @@ export type core = {
     assets: Get<{ assets: RekeyAccountRecord[] }, { wallet?: string }>
     'my-assets': Get<{ assets: Asset[] }, { wallet?: string }>
     'asset/:id': Get<{ value: Nft }, undefined, 'id'>
-    'asset-info/:id': Get<RekeyAccountRecord, undefined, 'id'>
+    'asset-info/:id': Get<RekeyAccountRecord | undefined, undefined, 'id'>
     healthz: Get<{ status: 'ok' }>
   }
   post: {
