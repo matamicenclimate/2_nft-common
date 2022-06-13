@@ -1,6 +1,7 @@
 import Container, { Service } from 'typedi'
 import BlockchainGateway from '../BlockchainGateway'
 import BlockchainGatewayProvider from '../BlockchainGatewayProvider'
+import { EncodeFeature } from '../features/EncodeFeature'
 import OptInFeature from '../features/OptInFeature'
 import PaymentFeature from '../features/PaymentFeature'
 
@@ -9,7 +10,10 @@ export const ALGORAND_GATEWAY_ID = 'algorand'
 /**
  * Algorand blockchain-oriented gateway, enables features from algorand.
  */
-export type AlgorandGateway = BlockchainGateway & PaymentFeature & OptInFeature
+export type AlgorandGateway = BlockchainGateway &
+  PaymentFeature &
+  OptInFeature &
+  EncodeFeature
 
 export class AlgorandGatewayNotProvidedException extends Error {
   constructor() {
@@ -28,6 +32,17 @@ export class AlgorandGatewayProvider {
   constructor() {
     this.registry = Container.get(BlockchainGatewayProvider)
   }
+
+  /**
+   * Attempts to retrieve any algorand gateway, throws if not provided.
+   */
+  static get gateway(): AlgorandGateway {
+    return Container.get(AlgorandGatewayProvider).gateway
+  }
+
+  /**
+   * Attempts to retrieve any algorand gateway, throws if not provided.
+   */
   get gateway(): AlgorandGateway {
     for (const instance of this.registry.get(ALGORAND_GATEWAY_ID)) {
       return instance as AlgorandGateway

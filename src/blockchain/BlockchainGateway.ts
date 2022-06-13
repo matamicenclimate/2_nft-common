@@ -1,3 +1,4 @@
+import { EncodeFeature } from './features/EncodeFeature'
 import OptInFeature from './features/OptInFeature'
 import PaymentFeature from './features/PaymentFeature'
 
@@ -6,6 +7,7 @@ import PaymentFeature from './features/PaymentFeature'
  */
 export default interface BlockchainGateway
   extends Partial<PaymentFeature>,
-    Partial<OptInFeature> {
+    Partial<OptInFeature>,
+    Partial<EncodeFeature> {
   get id(): string
 }
