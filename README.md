@@ -61,6 +61,44 @@ sequenceDiagram
     note right of M: NFT is listed <br/> in the marketplace
     deactivate M
 ```
+
+## Direct listing
+
+```mermaid
+sequenceDiagram
+    participant Ca as Cause
+    participant C as Creator
+    participant M as Marketplace <br/> (Smart Contract)
+    participant Cli as Client
+    autonumber
+    
+    activate Cli
+    note right of Cli: Buy NFT from Marketplace
+    Cli->>+M: Sends Algos
+    deactivate Cli
+    
+    activate M
+    note left of M: Checks everything is ok
+    M->>Cli: Sends NFT
+    deactivate M
+    
+    activate Cli
+    note right of Cli: Recieves NFT
+    deactivate Cli
+    
+    M->>Ca: SC sends purchase % <br/>to the Cause
+    activate Ca
+    note left of Ca: Receives Algos in <br/> their wallet
+    deactivate Ca
+
+    M->>C: SC sends purchase % <br/>to the Creator
+    activate C
+    note left of C: Receives Algos in <br/> their wallet
+    deactivate C
+
+    activate M
+    note left of M: Keeps the remainder <br/> of the purchase 
+    deactivate M
 ```
 
 ## Dependencies
