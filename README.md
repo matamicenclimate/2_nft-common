@@ -101,6 +101,74 @@ sequenceDiagram
     deactivate M
 ```
 
+## Auction Logic
+
+```mermaid
+sequenceDiagram
+    participant Ca as Cause
+    participant C as Creator
+    participant M as Marketplace <br/> (Smart Contract)
+    participant Cli as Client 1
+    participant Cli2 as Client 2
+    autonumber
+    
+    activate M
+    note left of M: Start auction
+    deactivate M
+
+    activate Cli
+    note right of Cli: Makes a bid
+    Cli->>+M: Send bid deposit
+    deactivate Cli
+
+    activate M
+    note left of M: Client 1 is <br/> winning the auction
+    deactivate M
+    
+    activate Cli2
+    note right of Cli2: Makes a bid <br/> (bigger than client 1)
+    Cli2->>+M: Send bid deposit
+    deactivate Cli2
+
+    activate M
+    note left of M: Client 2 is <br/> winning the auction
+    M->>Cli: Returns bid deposit
+    deactivate M
+    
+    activate Cli
+    note right of Cli: Recieves deposit
+    deactivate Cli
+    
+    activate M
+    note left of M: Auction ends <br/> Client 2 wins <br/> the auction
+    M->>Cli2: Sends NFT
+    deactivate M
+    
+    activate Cli2
+    note right of Cli2: Recieves NFT
+    deactivate Cli2
+
+    activate M
+    note left of M: Split the money from the <br/> auction among participants
+    deactivate M
+    
+
+    M->>Ca: SC sends auction purchase % <br/>to the Cause
+    activate Ca
+    note left of Ca: Receives Algos in <br/> their wallet
+    deactivate Ca
+
+    M->>C: SC sends auction purchase % <br/> to the Creator
+    activate C
+    note left of C: Receives Algos in <br/> their wallet
+    deactivate C
+
+    activate M
+    note left of M: Keeps the remainder <br/> of the purchase in the <br/> marketplace wallet
+    deactivate M
+```
+
+
 ## Dependencies
 
 - `algosdk`
