@@ -5,6 +5,7 @@ import { CommitOperationFeature } from '../features/CommitOperationFeature'
 import { ConfirmOperationFeature } from '../features/ConfirmOperationFeature'
 import { CreateAssetFeature } from '../features/CreateAssetFeature'
 import { EncodeFeature } from '../features/EncodeFeature'
+import { NodeAvailableFeature } from '../features/NodeAvailableFeature'
 import OptInFeature from '../features/OptInFeature'
 import PaymentFeature from '../features/PaymentFeature'
 import { SignOperationFeature } from '../features/SignOperationFeature'
@@ -22,7 +23,8 @@ export type AlgorandGateway = BlockchainGateway &
   CreateAssetFeature &
   SignOperationFeature &
   CommitOperationFeature &
-  ConfirmOperationFeature
+  ConfirmOperationFeature &
+  NodeAvailableFeature
 
 export class AlgorandGatewayNotProvidedException extends Error {
   constructor() {

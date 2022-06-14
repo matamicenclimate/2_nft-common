@@ -23,6 +23,12 @@ import {
   ConfirmOperationParameters,
   ConfirmOperationResult,
 } from '../../features/ConfirmOperationFeature'
+import { commited, confirmed, unsigned } from '../../Operation'
+import OperationSigner from '../../lib/OperationSigner'
+import {
+  NodeAvailableParameters,
+  NodeAvailableResult,
+} from '../../features/NodeAvailableFeature'
 
 class AlgosdkAlgorandGatewayFactory implements BlockchainGatewayFactory {
   provide(): BlockchainGateway {
@@ -31,6 +37,18 @@ class AlgosdkAlgorandGatewayFactory implements BlockchainGatewayFactory {
 }
 
 class AlgosdkAlgorandGateway implements AlgorandGateway {
+  client!: algosdk.Algodv2
+  signer!: OperationSigner
+  async nodeIsAvailable(
+    params: NodeAvailableParameters
+  ): Promise<NodeAvailableResult> {
+    try {
+      await this.client.status().do()
+      return { available: true }
+    } catch {
+      return { available: false }
+    }
+  }
   async confirmOperation(
     params: ConfirmOperationParameters
   ): Promise<ConfirmOperationResult> {
@@ -39,17 +57,8 @@ class AlgosdkAlgorandGateway implements AlgorandGateway {
       params.operation.id,
       10
     )
-    return {
-      operation: {
-        commited: true,
-        confirmed: true,
-        signed: true,
-        id: confirmedTxn.txId,
-        data: confirmedTxn,
-      },
-    }
+    return { operation: confirmed(confirmedTxn.txId, confirmedTxn) }
   }
-  client!: algosdk.Algodv2
   async commitOperation(
     params: CommitOperationParameters
   ): Promise<CommitOperationResult> {
@@ -61,19 +70,12 @@ class AlgosdkAlgorandGateway implements AlgorandGateway {
     const { txId } = await this.client
       .sendRawTransaction([params.operation.data?.blob as Uint8Array])
       .do()
-    return {
-      operation: {
-        confirmed: undefined,
-        commited: true,
-        signed: true,
-        id: txId,
-      },
-    }
+    return { operation: commited(txId) }
   }
   async signOperation(
     params: SignOperationParameters
   ): Promise<SignOperationResult> {
-    throw new Error('Method not implemented.')
+    return { operation: await this.signer.sign(params.operation) }
   }
   async createAsset(params: CreateAssetParameters): Promise<CreateAssetResult> {
     const txn = algosdk.makeAssetCreateTxnWithSuggestedParamsFromObject({
@@ -89,21 +91,13 @@ class AlgosdkAlgorandGateway implements AlgorandGateway {
               .payload
           : undefined,
       defaultFrozen: params.frozen ?? false,
-      freeze: params.accounts?.['freeze'] ?? params.owner,
-      manager: params.accounts?.['manager'] ?? params.owner,
-      clawback: params.accounts?.['clawback'] ?? params.owner,
-      reserve: params.accounts?.['reserve'] ?? params.owner,
+      freeze: params.accounts?.freeze ?? params.owner,
+      manager: params.accounts?.manager ?? params.owner,
+      clawback: params.accounts?.clawback ?? params.owner,
+      reserve: params.accounts?.reserve ?? params.owner,
       suggestedParams: await this.client.getTransactionParams().do(),
     })
-    return {
-      operation: {
-        id: txn.txID(),
-        commited: undefined,
-        confirmed: undefined,
-        signed: undefined,
-        data: { txn },
-      },
-    }
+    return { operation: unsigned(txn.txID(), { txn }) }
   }
   async encodeObject(params: EncodeParameters): Promise<EncodeResult> {
     return {

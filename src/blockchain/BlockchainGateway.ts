@@ -2,6 +2,7 @@ import { CommitOperationFeature } from './features/CommitOperationFeature'
 import { ConfirmOperationFeature } from './features/ConfirmOperationFeature'
 import { CreateAssetFeature } from './features/CreateAssetFeature'
 import { EncodeFeature } from './features/EncodeFeature'
+import { NodeAvailableFeature } from './features/NodeAvailableFeature'
 import OptInFeature from './features/OptInFeature'
 import PaymentFeature from './features/PaymentFeature'
 import { SignOperationFeature } from './features/SignOperationFeature'
@@ -12,7 +13,8 @@ export type Features = Partial<PaymentFeature> &
   Partial<CreateAssetFeature> &
   Partial<SignOperationFeature> &
   Partial<CommitOperationFeature> &
-  Partial<ConfirmOperationFeature>
+  Partial<ConfirmOperationFeature> &
+  Partial<NodeAvailableFeature>
 
 /**
  * Abstract blockchain gateway.
