@@ -129,10 +129,10 @@ class AlgosdkAlgorandGateway implements BlockchainGateway {
               .payload
           : undefined,
       defaultFrozen: params.frozen ?? false,
-      freeze: params.accounts?.freeze ?? params.owner,
-      manager: params.accounts?.manager ?? params.owner,
-      clawback: params.accounts?.clawback ?? params.owner,
-      reserve: params.accounts?.reserve ?? params.owner,
+      freeze: params.accounts?.freeze,
+      manager: params.accounts?.manager,
+      clawback: params.accounts?.clawback,
+      reserve: params.accounts?.reserve,
       suggestedParams: await this.client.getTransactionParams().do(),
     })
     return { operation: unsigned(txn.txID(), { txn }) }
