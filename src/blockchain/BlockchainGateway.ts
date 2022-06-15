@@ -8,15 +8,15 @@ import OptInFeature from './features/OptInFeature'
 import PaymentFeature from './features/PaymentFeature'
 import { SignOperationFeature } from './features/SignOperationFeature'
 
-export type Features = Partial<PaymentFeature> &
-  Partial<OptInFeature> &
-  Partial<EncodeFeature> &
-  Partial<CreateAssetFeature> &
-  Partial<SignOperationFeature> &
-  Partial<CommitOperationFeature> &
-  Partial<ConfirmOperationFeature> &
-  Partial<NodeAvailableFeature> &
-  Partial<AccountInformationFeature>
+export type Features = PaymentFeature &
+  OptInFeature &
+  EncodeFeature &
+  CreateAssetFeature &
+  SignOperationFeature &
+  CommitOperationFeature &
+  ConfirmOperationFeature &
+  NodeAvailableFeature &
+  AccountInformationFeature
 
 /**
  * Abstract blockchain gateway.

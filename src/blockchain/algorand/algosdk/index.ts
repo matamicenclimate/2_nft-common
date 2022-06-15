@@ -5,7 +5,6 @@ import BlockchainGatewayProvider from '../../BlockchainGatewayProvider'
 import { EncodeParameters, EncodeResult } from '../../features/EncodeFeature'
 import { OptInParameters, OptInResult } from '../../features/OptInFeature'
 import { PaymentParameters, PaymentResult } from '../../features/PaymentFeature'
-import { AlgorandGateway, ALGORAND_GATEWAY_ID } from '../AlgorandGateway'
 import algosdk from 'algosdk'
 import {
   CreateAssetParameters,
@@ -44,7 +43,9 @@ class AlgosdkAlgorandGatewayFactory implements BlockchainGatewayFactory {
   }
 }
 
-class AlgosdkAlgorandGateway implements AlgorandGateway {
+export const ALGORAND_GATEWAY_ID = 'algorand'
+
+class AlgosdkAlgorandGateway implements BlockchainGateway {
   constructor(
     private readonly client: algosdk.Algodv2,
     private readonly signer: OperationSigner
