@@ -1,3 +1,4 @@
+import { AccountInformationFeature } from './features/AccountInformationFeature'
 import { CommitOperationFeature } from './features/CommitOperationFeature'
 import { ConfirmOperationFeature } from './features/ConfirmOperationFeature'
 import { CreateAssetFeature } from './features/CreateAssetFeature'
@@ -14,7 +15,8 @@ export type Features = Partial<PaymentFeature> &
   Partial<SignOperationFeature> &
   Partial<CommitOperationFeature> &
   Partial<ConfirmOperationFeature> &
-  Partial<NodeAvailableFeature>
+  Partial<NodeAvailableFeature> &
+  Partial<AccountInformationFeature>
 
 /**
  * Abstract blockchain gateway.

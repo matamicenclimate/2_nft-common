@@ -29,16 +29,36 @@ import {
   NodeAvailableParameters,
   NodeAvailableResult,
 } from '../../features/NodeAvailableFeature'
+import {
+  AccountInformationParameters,
+  AccountInformationResult,
+} from '../../features/AccountInformationFeature'
 
 class AlgosdkAlgorandGatewayFactory implements BlockchainGatewayFactory {
+  constructor(
+    private readonly client: algosdk.Algodv2,
+    private readonly signer: OperationSigner
+  ) {}
   provide(): BlockchainGateway {
-    return new AlgosdkAlgorandGateway()
+    return new AlgosdkAlgorandGateway(this.client, this.signer)
   }
 }
 
 class AlgosdkAlgorandGateway implements AlgorandGateway {
-  client!: algosdk.Algodv2
-  signer!: OperationSigner
+  constructor(
+    private readonly client: algosdk.Algodv2,
+    private readonly signer: OperationSigner
+  ) {}
+  async getAccountInformation(
+    params: AccountInformationParameters
+  ): Promise<AccountInformationResult> {
+    const accountInfo = await this.client
+      .accountInformation(params.address)
+      .do()
+    return {
+      balance: accountInfo.amount,
+    }
+  }
   async nodeIsAvailable(
     params: NodeAvailableParameters
   ): Promise<NodeAvailableResult> {
@@ -116,6 +136,11 @@ class AlgosdkAlgorandGateway implements AlgorandGateway {
   }
 }
 
-Container.get(BlockchainGatewayProvider).register(
-  new AlgosdkAlgorandGatewayFactory()
-)
+export function algorandBlockchainSetup(
+  client: algosdk.Algodv2,
+  signer: OperationSigner
+) {
+  Container.get(BlockchainGatewayProvider).register(
+    new AlgosdkAlgorandGatewayFactory(client, signer)
+  )
+}

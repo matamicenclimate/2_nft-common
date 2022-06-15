@@ -1,6 +1,7 @@
 import Container, { Service } from 'typedi'
 import BlockchainGateway from '../BlockchainGateway'
 import BlockchainGatewayProvider from '../BlockchainGatewayProvider'
+import { AccountInformationFeature } from '../features/AccountInformationFeature'
 import { CommitOperationFeature } from '../features/CommitOperationFeature'
 import { ConfirmOperationFeature } from '../features/ConfirmOperationFeature'
 import { CreateAssetFeature } from '../features/CreateAssetFeature'
@@ -24,7 +25,8 @@ export type AlgorandGateway = BlockchainGateway &
   SignOperationFeature &
   CommitOperationFeature &
   ConfirmOperationFeature &
-  NodeAvailableFeature
+  NodeAvailableFeature &
+  AccountInformationFeature
 
 export class AlgorandGatewayNotProvidedException extends Error {
   constructor() {
