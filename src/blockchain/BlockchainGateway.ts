@@ -2,6 +2,7 @@ import { AccountInformationFeature } from './features/AccountInformationFeature'
 import { CommitOperationFeature } from './features/CommitOperationFeature'
 import { ConfirmOperationFeature } from './features/ConfirmOperationFeature'
 import { CreateAssetFeature } from './features/CreateAssetFeature'
+import { DestroyAssetFeature } from './features/DestroyAssetFeature'
 import { EncodeFeature } from './features/EncodeFeature'
 import { NodeAvailableFeature } from './features/NodeAvailableFeature'
 import OptInFeature from './features/OptInFeature'
@@ -16,7 +17,8 @@ export type Features = PaymentFeature &
   CommitOperationFeature &
   ConfirmOperationFeature &
   NodeAvailableFeature &
-  AccountInformationFeature
+  AccountInformationFeature &
+  DestroyAssetFeature
 
 /**
  * Abstract blockchain gateway.

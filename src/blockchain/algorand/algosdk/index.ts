@@ -32,6 +32,10 @@ import {
   AccountInformationParameters,
   AccountInformationResult,
 } from '../../features/AccountInformationFeature'
+import {
+  DestroyAssetParameters,
+  DestroyAssetResult,
+} from '../../features/DestroyAssetFeature'
 
 class AlgosdkAlgorandGatewayFactory implements BlockchainGatewayFactory {
   constructor(
@@ -50,6 +54,18 @@ class AlgosdkAlgorandGateway implements BlockchainGateway {
     private readonly client: algosdk.Algodv2,
     private readonly signer: OperationSigner
   ) {}
+  async destroyAsset(
+    param: DestroyAssetParameters
+  ): Promise<DestroyAssetResult> {
+    const params = await this.client.getTransactionParams().do()
+    const txn = algosdk.makeAssetDestroyTxnWithSuggestedParamsFromObject({
+      from: param.owner,
+      note: param.metadata?.payload,
+      assetIndex: Number(param.asset),
+      suggestedParams: params,
+    })
+    return { operation: unsigned(txn.txID()) }
+  }
   async getAccountInformation(
     params: AccountInformationParameters
   ): Promise<AccountInformationResult> {
@@ -58,6 +74,7 @@ class AlgosdkAlgorandGateway implements BlockchainGateway {
       .do()
     return {
       balance: accountInfo.amount,
+      data: accountInfo,
     }
   }
   async nodeIsAvailable(

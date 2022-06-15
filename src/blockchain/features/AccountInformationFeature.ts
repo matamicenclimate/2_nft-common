@@ -1,3 +1,5 @@
+import { Data } from '../Operation'
+
 export interface AccountInformationParameters {
   address: string
 }
@@ -10,6 +12,7 @@ export interface AccountInformationResult {
   }
   name?: string
   tags?: string[]
+  data?: Data
 }
 
 export interface AccountInformationFeature {
