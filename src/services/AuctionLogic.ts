@@ -83,7 +83,7 @@ export class AuctionLogic {
       approvalProgram: approval,
       clearProgram: clear,
       foreignAssets: [assetId],
-      numGlobalByteSlices: 5,
+      numGlobalByteSlices: 4,
       numGlobalInts: 9,
       numLocalByteSlices: 0,
       numLocalInts: 0,
@@ -100,8 +100,6 @@ export class AuctionLogic {
   async createDirectListing(
     assetId: number,
     reserve: number,
-    bidIncrement: number,
-    account: algosdk.Account,
     causeWallet: string,
     creatorWallet: string,
     causePercentage: number,
@@ -124,15 +122,11 @@ export class AuctionLogic {
       algosdk.decodeAddress(causeWallet).publicKey,
       creatorPercentage.toBytes(8, 'big'),
       causePercentage.toBytes(8, 'big'),
-      algosdk.decodeAddress(account.addr).publicKey,
     ]
     const client = this.client.client
     const params = await client.getTransactionParams().do()
-    console.log(
-      `Creating smart app for direct listing, bound to ${account.addr}...`
-    )
     const txn = await algosdk.makeApplicationCreateTxnFromObject({
-      from: account.addr,
+      from: this.account.account.addr,
       suggestedParams: params,
       onComplete: algosdk.OnApplicationComplete.NoOpOC,
       approvalProgram: approval,
