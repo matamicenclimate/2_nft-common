@@ -62,11 +62,27 @@ class AlgosdkAlgorandGateway implements BlockchainGateway {
     op: SignedOperationCluster
   ): Promise<CommittedOperationCluster>
   commitOperation(...ops: SignedOperation[]): Promise<CommittedOperationCluster>
-  commitOperation(
+  async commitOperation(
     op?: any,
     ...rest: any[]
   ): Promise<CommittedOperationCluster> {
-    throw new Error('Method not implemented.')
+    // if (!(params.operation.data?.blob instanceof Uint8Array)) {
+    //   throw new Error(
+    //     `Invalid operation: Attempting to commit an operation that is not compatible with the Algorand blockchain!`
+    //   )
+    // }
+    if (op instanceof SignedOperationCluster) {
+      const txs = await this.client
+        .sendRawTransaction(op.operations.map(s => s.data?.blob as Uint8Array))
+        .do()
+      console.log('DEBUG,1:', txs)
+      return new CommittedOperationCluster(this, txs)
+    }
+    const txs = await this.client
+      .sendRawTransaction([op, ...rest].map(s => s.data?.blob as Uint8Array))
+      .do()
+    console.log('DEBUG,0:', txs)
+    return new CommittedOperationCluster(this, txs)
   }
   confirmOperation(
     ...ops: CommittedOperation[]
@@ -77,11 +93,18 @@ class AlgosdkAlgorandGateway implements BlockchainGateway {
   confirmOperation(
     op?: any,
     ...rest: any[]
-  ): Promise<import('../../Operation').ConfirmedOperationCluster> {
+  ): Promise<ConfirmedOperationCluster> {
     throw new Error('Method not implemented.')
+    //   const confirmedTxn = await algosdk.waitForConfirmation(
+    //     this.client,
+    //     params.operation.id,
+    //     10
+    //   )
+    //   const op =
+    //   return new ConfirmedOperationCluster(this, [op])
   }
   operation(id: string, data?: Dict): UnsignedOperation {
-    throw new Error('Method not implemented.')
+    return new UnsignedOperation(this, id, data)
   }
   async destroyAsset(
     param: DestroyAssetParameters
@@ -116,30 +139,6 @@ class AlgosdkAlgorandGateway implements BlockchainGateway {
       return { available: false }
     }
   }
-  // async confirmOperation(
-  //   params: ConfirmOperationParameters
-  // ): Promise<ConfirmOperationResult> {
-  //   const confirmedTxn = await algosdk.waitForConfirmation(
-  //     this.client,
-  //     params.operation.id,
-  //     10
-  //   )
-  //   const op =
-  //   return new ConfirmedOperationCluster(this, [op])
-  // }
-  // async commitOperation(
-  //   params: CommitOperationParameters
-  // ): Promise<CommitOperationResult> {
-  //   if (!(params.operation.data?.blob instanceof Uint8Array)) {
-  //     throw new Error(
-  //       `Invalid operation: Attempting to commit an operation that is not compatible with the Algorand blockchain!`
-  //     )
-  //   }
-  //   const { txId } = await this.client
-  //     .sendRawTransaction([params.operation.data?.blob as Uint8Array])
-  //     .do()
-  //   return { operation: commited(txId) }
-  // }
   async createAsset(
     params: CreateAssetParameters
   ): Promise<UnsignedOperationCluster> {
