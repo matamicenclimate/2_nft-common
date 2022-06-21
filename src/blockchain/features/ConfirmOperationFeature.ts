@@ -1,18 +1,22 @@
-import { CommitedOperation, ConfirmedOperation } from '../Operation'
+import {
+  CommittedOperation,
+  CommittedOperationCluster,
+  ConfirmedOperation,
+  ConfirmedOperationCluster,
+} from '../Operation'
 
-export interface ConfirmOperationParameters {
-  operation: CommitedOperation
-}
+export type ConfirmOperationParameters = CommittedOperation[]
 
-export interface ConfirmOperationResult {
-  operation: ConfirmedOperation
-}
+export type ConfirmOperationResult = ConfirmedOperation[]
 
 export interface ConfirmOperationFeature {
   /**
    * Awaits for the blockchain to validate the ongoing, commited & signed operation.
    */
   confirmOperation(
-    params: ConfirmOperationParameters
-  ): Promise<ConfirmOperationResult>
+    ...ops: CommittedOperation[]
+  ): Promise<ConfirmedOperationCluster>
+  confirmOperation(
+    op: CommittedOperationCluster
+  ): Promise<ConfirmedOperationCluster>
 }

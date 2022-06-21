@@ -6,23 +6,16 @@ import { EncodeParameters, EncodeResult } from '../../features/EncodeFeature'
 import { OptInParameters, OptInResult } from '../../features/OptInFeature'
 import { PaymentParameters, PaymentResult } from '../../features/PaymentFeature'
 import algosdk from 'algosdk'
+import { CreateAssetParameters } from '../../features/CreateAssetFeature'
 import {
-  CreateAssetParameters,
-  CreateAssetResult,
-} from '../../features/CreateAssetFeature'
-import {
-  SignOperationParameters,
-  SignOperationResult,
-} from '../../features/SignOperationFeature'
-import {
-  CommitOperationParameters,
-  CommitOperationResult,
-} from '../../features/CommitOperationFeature'
-import {
-  ConfirmOperationParameters,
-  ConfirmOperationResult,
-} from '../../features/ConfirmOperationFeature'
-import { commited, confirmed, unsigned } from '../../Operation'
+  CommittedOperation,
+  CommittedOperationCluster,
+  ConfirmedOperationCluster,
+  SignedOperation,
+  SignedOperationCluster,
+  UnsignedOperation,
+  UnsignedOperationCluster,
+} from '../../Operation'
 import OperationSigner from '../../lib/OperationSigner'
 import {
   NodeAvailableParameters,
@@ -32,10 +25,8 @@ import {
   AccountInformationParameters,
   AccountInformationResult,
 } from '../../features/AccountInformationFeature'
-import {
-  DestroyAssetParameters,
-  DestroyAssetResult,
-} from '../../features/DestroyAssetFeature'
+import { DestroyAssetParameters } from '../../features/DestroyAssetFeature'
+import { Dict } from '@common/src/lib/app'
 
 class AlgosdkAlgorandGatewayFactory implements BlockchainGatewayFactory {
   constructor(
@@ -54,9 +45,47 @@ class AlgosdkAlgorandGateway implements BlockchainGateway {
     private readonly client: algosdk.Algodv2,
     private readonly signer: OperationSigner
   ) {}
+  signOperation(op: UnsignedOperationCluster): Promise<SignedOperationCluster>
+  signOperation(...ops: UnsignedOperation[]): Promise<SignedOperationCluster>
+  async signOperation(
+    op?: any,
+    ...rest: any[]
+  ): Promise<SignedOperationCluster> {
+    if (op instanceof UnsignedOperationCluster) {
+      const ops = await this.signer.sign(op.operations)
+      return new SignedOperationCluster(this, ops)
+    }
+    const ops = await this.signer.sign([op, ...rest])
+    return new SignedOperationCluster(this, ops)
+  }
+  commitOperation(
+    op: SignedOperationCluster
+  ): Promise<CommittedOperationCluster>
+  commitOperation(...ops: SignedOperation[]): Promise<CommittedOperationCluster>
+  commitOperation(
+    op?: any,
+    ...rest: any[]
+  ): Promise<CommittedOperationCluster> {
+    throw new Error('Method not implemented.')
+  }
+  confirmOperation(
+    ...ops: CommittedOperation[]
+  ): Promise<ConfirmedOperationCluster>
+  confirmOperation(
+    op: CommittedOperationCluster
+  ): Promise<ConfirmedOperationCluster>
+  confirmOperation(
+    op?: any,
+    ...rest: any[]
+  ): Promise<import('../../Operation').ConfirmedOperationCluster> {
+    throw new Error('Method not implemented.')
+  }
+  operation(id: string, data?: Dict): UnsignedOperation {
+    throw new Error('Method not implemented.')
+  }
   async destroyAsset(
     param: DestroyAssetParameters
-  ): Promise<DestroyAssetResult> {
+  ): Promise<UnsignedOperationCluster> {
     const params = await this.client.getTransactionParams().do()
     const txn = algosdk.makeAssetDestroyTxnWithSuggestedParamsFromObject({
       from: param.owner,
@@ -64,7 +93,7 @@ class AlgosdkAlgorandGateway implements BlockchainGateway {
       assetIndex: Number(param.asset),
       suggestedParams: params,
     })
-    return { operation: unsigned(txn.txID()) }
+    return this.operation(txn.txID(), { txn: txn as any }).cluster()
   }
   async getAccountInformation(
     params: AccountInformationParameters
@@ -87,35 +116,33 @@ class AlgosdkAlgorandGateway implements BlockchainGateway {
       return { available: false }
     }
   }
-  async confirmOperation(
-    params: ConfirmOperationParameters
-  ): Promise<ConfirmOperationResult> {
-    const confirmedTxn = await algosdk.waitForConfirmation(
-      this.client,
-      params.operation.id,
-      10
-    )
-    return { operation: confirmed(confirmedTxn.txId, confirmedTxn) }
-  }
-  async commitOperation(
-    params: CommitOperationParameters
-  ): Promise<CommitOperationResult> {
-    if (!(params.operation.data?.blob instanceof Uint8Array)) {
-      throw new Error(
-        `Invalid operation: Attempting to commit an operation that is not compatible with the Algorand blockchain!`
-      )
-    }
-    const { txId } = await this.client
-      .sendRawTransaction([params.operation.data?.blob as Uint8Array])
-      .do()
-    return { operation: commited(txId) }
-  }
-  async signOperation(
-    params: SignOperationParameters
-  ): Promise<SignOperationResult> {
-    return { operation: await this.signer.sign(params.operation) }
-  }
-  async createAsset(params: CreateAssetParameters): Promise<CreateAssetResult> {
+  // async confirmOperation(
+  //   params: ConfirmOperationParameters
+  // ): Promise<ConfirmOperationResult> {
+  //   const confirmedTxn = await algosdk.waitForConfirmation(
+  //     this.client,
+  //     params.operation.id,
+  //     10
+  //   )
+  //   const op =
+  //   return new ConfirmedOperationCluster(this, [op])
+  // }
+  // async commitOperation(
+  //   params: CommitOperationParameters
+  // ): Promise<CommitOperationResult> {
+  //   if (!(params.operation.data?.blob instanceof Uint8Array)) {
+  //     throw new Error(
+  //       `Invalid operation: Attempting to commit an operation that is not compatible with the Algorand blockchain!`
+  //     )
+  //   }
+  //   const { txId } = await this.client
+  //     .sendRawTransaction([params.operation.data?.blob as Uint8Array])
+  //     .do()
+  //   return { operation: commited(txId) }
+  // }
+  async createAsset(
+    params: CreateAssetParameters
+  ): Promise<UnsignedOperationCluster> {
     const txn = algosdk.makeAssetCreateTxnWithSuggestedParamsFromObject({
       from: params.owner,
       total: params.amount,
@@ -135,7 +162,7 @@ class AlgosdkAlgorandGateway implements BlockchainGateway {
       reserve: params.accounts?.reserve,
       suggestedParams: await this.client.getTransactionParams().do(),
     })
-    return { operation: unsigned(txn.txID(), { txn }) }
+    return this.operation(txn.txID(), { txn: txn as any }).cluster()
   }
   async encodeObject(params: EncodeParameters): Promise<EncodeResult> {
     return {

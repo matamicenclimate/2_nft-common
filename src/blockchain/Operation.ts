@@ -1,69 +1,91 @@
+import BlockchainGateway from './BlockchainGateway'
+
 export type Data = Record<string, unknown>
 
-export interface Operation {
-  id: string
-  data?: Data
-  signed?: true
-  commited?: true
-  confirmed?: true
+export abstract class Operation {
+  constructor(
+    readonly chain: BlockchainGateway,
+    readonly id: string,
+    public data?: Data
+  ) {}
 }
 
-export function unsigned(id: string, data?: Data): UnsignedOperation {
-  return {
-    id,
-    data,
-    signed: undefined,
-    commited: undefined,
-    confirmed: undefined,
+export class UnsignedOperation extends Operation {
+  public readonly tag = 'unsigned' as const
+  cluster() {
+    return new UnsignedOperationCluster(this.chain, [this])
   }
-}
-export interface UnsignedOperation extends Operation {
-  signed: undefined
-  commited: undefined
-  confirmed: undefined
+  async sign() {
+    const op = await this.chain.signOperation(this)
+    return op.operations[0]
+  }
 }
 
-export function signed(id: string, data?: Data): SignedOperation {
-  return {
-    id,
-    data,
-    signed: true,
-    commited: undefined,
-    confirmed: undefined,
+export class UnsignedOperationCluster {
+  constructor(
+    private readonly chain: BlockchainGateway,
+    public operations: UnsignedOperation[]
+  ) {}
+  async sign() {
+    const ops = await this.chain.signOperation(this)
+    return new SignedOperationCluster(this.chain, ops.operations)
   }
-}
-export interface SignedOperation extends Operation {
-  signed: true
-  commited: undefined
-  confirmed: undefined
 }
 
-export function commited(id: string, data?: Data): CommitedOperation {
-  return {
-    id,
-    data,
-    signed: true,
-    commited: true,
-    confirmed: undefined,
+export class SignedOperation extends Operation {
+  readonly tag = 'signed' as const
+  cluster() {
+    return new SignedOperationCluster(this.chain, [this])
   }
-}
-export interface CommitedOperation extends Operation {
-  signed: true
-  commited: true
-  confirmed: undefined
+  async commit() {
+    const op = await this.chain.commitOperation(this)
+    return op.operations[0]
+  }
 }
 
-export function confirmed(id: string, data?: Data): ConfirmedOperation {
-  return {
-    id,
-    data,
-    signed: true,
-    commited: true,
-    confirmed: true,
+export class SignedOperationCluster {
+  constructor(
+    private readonly chain: BlockchainGateway,
+    public operations: SignedOperation[]
+  ) {}
+  async commit() {
+    const ops = await this.chain.commitOperation(...this.operations)
+    return new CommittedOperationCluster(this.chain, ops.operations)
   }
 }
-export interface ConfirmedOperation extends Operation {
-  signed: true
-  commited: true
-  confirmed: true
+
+export class CommittedOperation extends Operation {
+  readonly tag = 'commited' as const
+  cluster() {
+    return new CommittedOperationCluster(this.chain, [this])
+  }
+  async confirm() {
+    const op = await this.chain.confirmOperation(this)
+    return op.operations[0]
+  }
+}
+
+export class CommittedOperationCluster {
+  constructor(
+    private readonly chain: BlockchainGateway,
+    public operations: CommittedOperation[]
+  ) {}
+  async confirm() {
+    const ops = await this.chain.confirmOperation(this)
+    return new ConfirmedOperationCluster(this.chain, ops.operations)
+  }
+}
+
+export class ConfirmedOperation extends Operation {
+  readonly tag = 'confirmed' as const
+  cluster() {
+    return new ConfirmedOperationCluster(this.chain, [this])
+  }
+}
+
+export class ConfirmedOperationCluster {
+  constructor(
+    private readonly chain: BlockchainGateway,
+    public operations: ConfirmedOperation[]
+  ) {}
 }

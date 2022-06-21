@@ -1,16 +1,13 @@
-import { SignedOperation, UnsignedOperation } from '../Operation'
-
-export interface SignOperationParameters {
-  operation: UnsignedOperation
-}
-
-export interface SignOperationResult {
-  operation: SignedOperation
-}
+import {
+  SignedOperationCluster,
+  UnsignedOperation,
+  UnsignedOperationCluster,
+} from '../Operation'
 
 export interface SignOperationFeature {
   /**
    * Signs an operation, returns the signed version.
    */
-  signOperation(params: SignOperationParameters): Promise<SignOperationResult>
+  signOperation(op: UnsignedOperationCluster): Promise<SignedOperationCluster>
+  signOperation(...ops: UnsignedOperation[]): Promise<SignedOperationCluster>
 }

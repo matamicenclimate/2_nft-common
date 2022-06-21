@@ -1,18 +1,15 @@
-import { CommitedOperation, SignedOperation } from '../Operation'
-
-export interface CommitOperationParameters {
-  operation: SignedOperation
-}
-
-export interface CommitOperationResult {
-  operation: CommitedOperation
-}
+import {
+  CommittedOperationCluster,
+  SignedOperation,
+  SignedOperationCluster,
+} from '../Operation'
 
 export interface CommitOperationFeature {
   /**
    * Commits an operation to the blockchain, making it effective, yet unconfirmed.
    */
   commitOperation(
-    params: CommitOperationParameters
-  ): Promise<CommitOperationResult>
+    op: SignedOperationCluster
+  ): Promise<CommittedOperationCluster>
+  commitOperation(...ops: SignedOperation[]): Promise<CommittedOperationCluster>
 }

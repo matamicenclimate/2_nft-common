@@ -1,4 +1,4 @@
-import { UnsignedOperation } from '../Operation'
+import { UnsignedOperationCluster } from '../Operation'
 
 export interface DestroyAssetParameters {
   owner: string
@@ -9,13 +9,11 @@ export interface DestroyAssetParameters {
   }
 }
 
-export interface DestroyAssetResult {
-  operation: UnsignedOperation
-}
-
 export interface DestroyAssetFeature {
   /**
    * Creates an asset destruction operation.
    */
-  destroyAsset(param: DestroyAssetParameters): Promise<DestroyAssetResult>
+  destroyAsset(
+    ...params: DestroyAssetParameters[]
+  ): Promise<UnsignedOperationCluster>
 }

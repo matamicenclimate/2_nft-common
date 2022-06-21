@@ -7,7 +7,7 @@ import { SignedOperation, UnsignedOperation } from '../Operation'
 export default interface OperationSigner {
   /**
    * Signs an abstract operation.
-   * @param op The pending operation to be signed.
+   * @param ops The pending operation list to be signed.
    */
-  sign(op: UnsignedOperation): Promise<SignedOperation>
+  sign(ops: UnsignedOperation[]): Promise<SignedOperation[]>
 }

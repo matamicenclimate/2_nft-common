@@ -1,8 +1,4 @@
-import { UnsignedOperation } from '../Operation'
-
-export interface CreateAssetResult {
-  operation: UnsignedOperation
-}
+import { UnsignedOperationCluster } from '../Operation'
 
 export interface CreateAssetParameters {
   owner: string
@@ -22,5 +18,7 @@ export interface CreateAssetFeature {
   /**
    * Creates a custom asset into the blockchain.
    */
-  createAsset(params: CreateAssetParameters): Promise<CreateAssetResult>
+  createAsset(
+    ...params: CreateAssetParameters[]
+  ): Promise<UnsignedOperationCluster>
 }

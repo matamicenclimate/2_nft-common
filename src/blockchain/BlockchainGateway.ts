@@ -5,6 +5,7 @@ import { CreateAssetFeature } from './features/CreateAssetFeature'
 import { DestroyAssetFeature } from './features/DestroyAssetFeature'
 import { EncodeFeature } from './features/EncodeFeature'
 import { NodeAvailableFeature } from './features/NodeAvailableFeature'
+import OperationFeature from './features/OperationFeature'
 import OptInFeature from './features/OptInFeature'
 import PaymentFeature from './features/PaymentFeature'
 import { SignOperationFeature } from './features/SignOperationFeature'
@@ -18,7 +19,8 @@ export type Features = PaymentFeature &
   ConfirmOperationFeature &
   NodeAvailableFeature &
   AccountInformationFeature &
-  DestroyAssetFeature
+  DestroyAssetFeature &
+  OperationFeature
 
 /**
  * Abstract blockchain gateway.
