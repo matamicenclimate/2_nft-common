@@ -10,6 +10,7 @@ import { CreateAssetParameters } from '../../features/CreateAssetFeature'
 import {
   CommittedOperation,
   CommittedOperationCluster,
+  ConfirmedOperation,
   ConfirmedOperationCluster,
   SignedOperation,
   SignedOperationCluster,
@@ -66,23 +67,22 @@ class AlgosdkAlgorandGateway implements BlockchainGateway {
     op?: any,
     ...rest: any[]
   ): Promise<CommittedOperationCluster> {
-    // if (!(params.operation.data?.blob instanceof Uint8Array)) {
-    //   throw new Error(
-    //     `Invalid operation: Attempting to commit an operation that is not compatible with the Algorand blockchain!`
-    //   )
-    // }
     if (op instanceof SignedOperationCluster) {
       const txs = await this.client
         .sendRawTransaction(op.operations.map(s => s.data?.blob as Uint8Array))
         .do()
-      console.log('DEBUG,1:', txs)
-      return new CommittedOperationCluster(this, txs)
+      const ops = (txs instanceof Array ? txs : [txs]).map(
+        o => new CommittedOperation(this, o.txId, o)
+      )
+      return new CommittedOperationCluster(this, ops)
     }
     const txs = await this.client
       .sendRawTransaction([op, ...rest].map(s => s.data?.blob as Uint8Array))
       .do()
-    console.log('DEBUG,0:', txs)
-    return new CommittedOperationCluster(this, txs)
+    const ops = (txs instanceof Array ? txs : [txs]).map(
+      o => new CommittedOperation(this, o.txId, o)
+    )
+    return new CommittedOperationCluster(this, ops)
   }
   confirmOperation(
     ...ops: CommittedOperation[]
@@ -90,10 +90,19 @@ class AlgosdkAlgorandGateway implements BlockchainGateway {
   confirmOperation(
     op: CommittedOperationCluster
   ): Promise<ConfirmedOperationCluster>
-  confirmOperation(
+  async confirmOperation(
     op?: any,
     ...rest: any[]
   ): Promise<ConfirmedOperationCluster> {
+    if (op instanceof CommittedOperationCluster) {
+      const ops = op.operations.map(op =>
+        algosdk.waitForConfirmation(this.client, op.id, 10)
+      )
+      const confirmedTxs = await Promise.all(ops)
+      const out = confirmedTxs.map(o => new ConfirmedOperation(this, o.txId, o))
+      console.log(out)
+      return new ConfirmedOperationCluster(this, out)
+    }
     throw new Error('Method not implemented.')
     //   const confirmedTxn = await algosdk.waitForConfirmation(
     //     this.client,
