@@ -28,6 +28,39 @@ import {
 } from '../../features/AccountInformationFeature'
 import { DestroyAssetParameters } from '../../features/DestroyAssetFeature'
 import { Dict } from '@common/src/lib/app'
+import { BaseGasParameters, BaseGasResult } from '../../features/BaseGasFeature'
+import {
+  InvokeContractParameters,
+  InvokeContractResult,
+} from '../../features/InvokeContractFeature'
+import { SmartContractID, SmartContract } from '../../lib/SmartContract'
+import { ChainWallet } from '../../lib/ChainWallet'
+import { SmartContractMethod } from '../../lib/SmartContractMethod'
+import { ChainAsset } from '../../lib/ChainAsset'
+
+class AlgorandChainWallet extends ChainWallet {
+  constructor(readonly address: Uint8Array) {
+    super()
+  }
+}
+
+class AlgorandSmartContractID extends SmartContractID {
+  constructor(readonly id: number) {
+    super()
+  }
+}
+
+class AlgorandSmartContractMethod extends SmartContractMethod {
+  constructor(readonly name: string) {
+    super()
+  }
+}
+
+class AlgorandChainAsset extends ChainAsset {
+  constructor(readonly id: number) {
+    super()
+  }
+}
 
 class AlgosdkAlgorandGatewayFactory implements BlockchainGatewayFactory {
   constructor(
@@ -42,10 +75,67 @@ class AlgosdkAlgorandGatewayFactory implements BlockchainGatewayFactory {
 export const ALGORAND_GATEWAY_ID = 'algorand'
 
 class AlgosdkAlgorandGateway implements BlockchainGateway {
+  private assert(
+    input: ChainWallet | SmartContractID | ChainAsset | SmartContractMethod
+  ): typeof input extends ChainWallet
+    ? AlgorandChainWallet
+    : typeof input extends SmartContractID
+    ? AlgorandSmartContractID
+    : typeof input extends ChainAsset
+    ? AlgorandChainAsset
+    : typeof input extends SmartContractMethod
+    ? AlgorandSmartContractMethod
+    : never {
+    if (
+      input instanceof AlgorandChainWallet ||
+      input instanceof AlgorandSmartContractID ||
+      input instanceof AlgorandChainAsset ||
+      input instanceof AlgorandSmartContractMethod
+    ) {
+      return input as any
+    }
+    throw new Error(
+      `Attempting to use an invalid handle (Either smart contract ID or wallet that does not correspond with the current blockchain.)`
+    )
+  }
   constructor(
     private readonly client: algosdk.Algodv2,
     private readonly signer: OperationSigner
   ) {}
+  callSmartContract(
+    params: InvokeContractParameters
+  ): Promise<InvokeContractResult> {
+    const participants = params.participants.map(p => this.assert(p))
+    const caller = this.assert(params.caller)
+    const assets = params.assets.map(a => this.assert(a))
+    const out = await algosdk.makeApplicationCallTxnFromObject({
+      from: algosdk.encodeAddress(caller.address),
+      accounts: participants.map(p => algosdk.encodeAddress(p.address)),
+      suggestedParams: await this.client.getTransactionParams().do(),
+      foreignAssets: assets.map(a => a.address),
+    })
+  }
+  async bindSmartContract(_from: SmartContractID): Promise<SmartContract> {
+    const from = this.assert(_from)
+    const params = {
+      from: account.addr,
+      appIndex: appId,
+      onComplete: algosdk.OnApplicationComplete.NoOpOC,
+      appArgs: [directListingAbi.getMethodByName('on_bid').getSelector()],
+      accounts: [
+        algosdk.encodeAddress(state.cause),
+        algosdk.encodeAddress(state.creator),
+        algosdk.encodeAddress(state.seller),
+      ],
+      foreignAssets: [aId],
+      suggestedParams: await client().getTransactionParams().do(),
+    }
+  }
+  async getBaseGas(_params: BaseGasParameters): Promise<BaseGasResult> {
+    return {
+      value: algosdk.ALGORAND_MIN_TX_FEE,
+    }
+  }
   signOperation(op: UnsignedOperationCluster): Promise<SignedOperationCluster>
   signOperation(...ops: UnsignedOperation[]): Promise<SignedOperationCluster>
   async signOperation(

@@ -1,9 +1,12 @@
 import { AccountInformationFeature } from './features/AccountInformationFeature'
+import BaseGasFeature from './features/BaseGasFeature'
+import { BindSmartContractFeature } from './features/BindSmartContractFeature'
 import { CommitOperationFeature } from './features/CommitOperationFeature'
 import { ConfirmOperationFeature } from './features/ConfirmOperationFeature'
 import { CreateAssetFeature } from './features/CreateAssetFeature'
 import { DestroyAssetFeature } from './features/DestroyAssetFeature'
 import { EncodeFeature } from './features/EncodeFeature'
+import InvokeContractFeature from './features/InvokeContractFeature'
 import { NodeAvailableFeature } from './features/NodeAvailableFeature'
 import OperationFeature from './features/OperationFeature'
 import OptInFeature from './features/OptInFeature'
@@ -20,7 +23,10 @@ export type Features = PaymentFeature &
   NodeAvailableFeature &
   AccountInformationFeature &
   DestroyAssetFeature &
-  OperationFeature
+  OperationFeature &
+  BaseGasFeature &
+  InvokeContractFeature &
+  BindSmartContractFeature
 
 /**
  * Abstract blockchain gateway.
