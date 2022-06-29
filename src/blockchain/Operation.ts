@@ -12,8 +12,8 @@ export abstract class Operation {
 
 export class UnsignedOperation extends Operation {
   public readonly tag = 'unsigned' as const
-  cluster() {
-    return new UnsignedOperationCluster(this.chain, [this])
+  cluster(...extra: UnsignedOperation[]) {
+    return new UnsignedOperationCluster(this.chain, [this, ...extra])
   }
   async sign() {
     const op = await this.chain.signOperation(this)
@@ -29,6 +29,12 @@ export class UnsignedOperationCluster {
   async sign() {
     const ops = await this.chain.signOperation(this)
     return new SignedOperationCluster(this.chain, ops.operations)
+  }
+  join(...operations: UnsignedOperation[]) {
+    return new UnsignedOperationCluster(this.chain, [
+      ...this.operations,
+      ...operations,
+    ])
   }
 }
 
@@ -52,6 +58,12 @@ export class SignedOperationCluster {
     const ops = await this.chain.commitOperation(...this.operations)
     return new CommittedOperationCluster(this.chain, ops.operations)
   }
+  join(...operations: SignedOperation[]) {
+    return new SignedOperationCluster(this.chain, [
+      ...this.operations,
+      ...operations,
+    ])
+  }
 }
 
 export class CommittedOperation extends Operation {
@@ -73,6 +85,12 @@ export class CommittedOperationCluster {
   async confirm() {
     const ops = await this.chain.confirmOperation(this)
     return new ConfirmedOperationCluster(this.chain, ops.operations)
+  }
+  join(...operations: CommittedOperation[]) {
+    return new CommittedOperationCluster(this.chain, [
+      ...this.operations,
+      ...operations,
+    ])
   }
 }
 

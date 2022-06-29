@@ -12,6 +12,7 @@ import OperationFeature from './features/OperationFeature'
 import OptInFeature from './features/OptInFeature'
 import PaymentFeature from './features/PaymentFeature'
 import { SignOperationFeature } from './features/SignOperationFeature'
+import { SmartContractWalletFeature } from './features/SmartContractWalletFeature'
 
 export type Features = PaymentFeature &
   OptInFeature &
@@ -26,7 +27,8 @@ export type Features = PaymentFeature &
   OperationFeature &
   BaseGasFeature &
   InvokeContractFeature &
-  BindSmartContractFeature
+  BindSmartContractFeature &
+  SmartContractWalletFeature
 
 /**
  * Abstract blockchain gateway.
