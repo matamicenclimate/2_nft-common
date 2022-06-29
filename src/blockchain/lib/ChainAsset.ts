@@ -1,1 +1,3 @@
-export abstract class ChainAsset {}
+export abstract class ChainAsset {
+  readonly tag = 'asset' as const
+}

@@ -1,9 +1,9 @@
 import BlockchainGateway from '../BlockchainGateway'
 import { InvokeContractParameters } from '../features/InvokeContractFeature'
-import { ChainWallet } from './ChainWallet'
-import { SmartContractMethod } from './SmartContractMethod'
 
-export abstract class SmartContractID {}
+export abstract class SmartContractID {
+  readonly tag = 'smart-contract-id' as const
+}
 
 export class SmartContract {
   constructor(

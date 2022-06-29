@@ -1,17 +1,17 @@
 import Container from 'typedi'
-import { BlockchainGateway } from '../..'
-import BlockchainGatewayFactory from '../../BlockchainGatewayFactory'
+import algosdk from 'algosdk'
 import BlockchainGatewayProvider from '../../BlockchainGatewayProvider'
+import { BlockchainGateway } from '../..'
 import { EncodeParameters, EncodeResult } from '../../features/EncodeFeature'
 import { OptInParameters, OptInResult } from '../../features/OptInFeature'
 import { PaymentParameters, PaymentResult } from '../../features/PaymentFeature'
-import algosdk from 'algosdk'
 import { CreateAssetParameters } from '../../features/CreateAssetFeature'
 import {
   CommittedOperation,
   CommittedOperationCluster,
   ConfirmedOperation,
   ConfirmedOperationCluster,
+  Data,
   SignedOperation,
   SignedOperationCluster,
   UnsignedOperation,
@@ -34,58 +34,19 @@ import {
   InvokeContractResult,
 } from '../../features/InvokeContractFeature'
 import { SmartContractID, SmartContract } from '../../lib/SmartContract'
-import { ChainWallet } from '../../lib/ChainWallet'
-import { SmartContractMethod } from '../../lib/SmartContractMethod'
-import { ChainAsset } from '../../lib/ChainAsset'
+import {
+  AlgorandChainAsset,
+  AlgorandChainWallet,
+  AlgorandSmartContractID,
+  AlgorandSmartContractMethod,
+  ALGORAND_GATEWAY_ID,
+  AlgosdkAlgorandGatewayFactory,
+  Asserted,
+  Unasserted,
+} from './implementation'
 
-class AlgorandChainWallet extends ChainWallet {
-  constructor(readonly address: Uint8Array) {
-    super()
-  }
-}
-
-class AlgorandSmartContractID extends SmartContractID {
-  constructor(readonly id: number) {
-    super()
-  }
-}
-
-class AlgorandSmartContractMethod extends SmartContractMethod {
-  constructor(readonly name: string) {
-    super()
-  }
-}
-
-class AlgorandChainAsset extends ChainAsset {
-  constructor(readonly id: number) {
-    super()
-  }
-}
-
-class AlgosdkAlgorandGatewayFactory implements BlockchainGatewayFactory {
-  constructor(
-    private readonly client: algosdk.Algodv2,
-    private readonly signer: OperationSigner
-  ) {}
-  provide(): BlockchainGateway {
-    return new AlgosdkAlgorandGateway(this.client, this.signer)
-  }
-}
-
-export const ALGORAND_GATEWAY_ID = 'algorand'
-
-class AlgosdkAlgorandGateway implements BlockchainGateway {
-  private assert(
-    input: ChainWallet | SmartContractID | ChainAsset | SmartContractMethod
-  ): typeof input extends ChainWallet
-    ? AlgorandChainWallet
-    : typeof input extends SmartContractID
-    ? AlgorandSmartContractID
-    : typeof input extends ChainAsset
-    ? AlgorandChainAsset
-    : typeof input extends SmartContractMethod
-    ? AlgorandSmartContractMethod
-    : never {
+export class AlgosdkAlgorandGateway implements BlockchainGateway {
+  private assert<A extends Unasserted>(input: A): Asserted<A> {
     if (
       input instanceof AlgorandChainWallet ||
       input instanceof AlgorandSmartContractID ||
@@ -102,34 +63,28 @@ class AlgosdkAlgorandGateway implements BlockchainGateway {
     private readonly client: algosdk.Algodv2,
     private readonly signer: OperationSigner
   ) {}
-  callSmartContract(
+  async callSmartContract(
     params: InvokeContractParameters
   ): Promise<InvokeContractResult> {
     const participants = params.participants.map(p => this.assert(p))
     const caller = this.assert(params.caller)
     const assets = params.assets.map(a => this.assert(a))
+    const method = this.assert(params.method)
+    const contract = this.assert(params.contract)
     const out = await algosdk.makeApplicationCallTxnFromObject({
       from: algosdk.encodeAddress(caller.address),
       accounts: participants.map(p => algosdk.encodeAddress(p.address)),
       suggestedParams: await this.client.getTransactionParams().do(),
-      foreignAssets: assets.map(a => a.address),
-    })
-  }
-  async bindSmartContract(_from: SmartContractID): Promise<SmartContract> {
-    const from = this.assert(_from)
-    const params = {
-      from: account.addr,
-      appIndex: appId,
+      foreignAssets: assets.map(a => a.id),
       onComplete: algosdk.OnApplicationComplete.NoOpOC,
-      appArgs: [directListingAbi.getMethodByName('on_bid').getSelector()],
-      accounts: [
-        algosdk.encodeAddress(state.cause),
-        algosdk.encodeAddress(state.creator),
-        algosdk.encodeAddress(state.seller),
-      ],
-      foreignAssets: [aId],
-      suggestedParams: await client().getTransactionParams().do(),
+      appIndex: contract.id,
+    })
+    return {
+      result: this.operation(out.txID(), out as unknown as Data),
     }
+  }
+  async bindSmartContract(from: SmartContractID): Promise<SmartContract> {
+    return new SmartContract(this, from)
   }
   async getBaseGas(_params: BaseGasParameters): Promise<BaseGasResult> {
     return {
@@ -202,7 +157,7 @@ class AlgosdkAlgorandGateway implements BlockchainGateway {
     //   const op =
     //   return new ConfirmedOperationCluster(this, [op])
   }
-  operation(id: string, data?: Dict): UnsignedOperation {
+  operation(id: string, data?: Data): UnsignedOperation {
     return new UnsignedOperation(this, id, data)
   }
   async destroyAsset(
