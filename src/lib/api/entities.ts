@@ -50,23 +50,20 @@ export interface Nft {
 /** A discriminator field that tells us about the type of asset sale (What mode). */
 export type RekeyAccountType = 'direct-listing' | 'create-auction' | undefined
 
-export interface RekeyAccountRecord {
+export interface Listing {
   id: string
-  cause: string
   assetUrl?: string | undefined
-  rekeyWallet: string
   marketplaceWallet: string
-  assetId: number
-  applicationId: number
-  isClosedAuction: boolean
-  auctionStartDate: string
-  auctionEndDate: string
+  assetId: string
+  auctionId?: string
+  assetIdBlockchain: number
+  applicationIdBlockchain: number
+  isClosed: boolean
   createdAt: Date
   updatedAt: Date
-  deletedAt?: Date
-  type?: RekeyAccountType
+  deletedAt?: Date | null
 }
 
 export interface NftAssetInfo {
-  assetInfo: RekeyAccountRecord
+  assetInfo: Listing
 }
