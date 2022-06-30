@@ -4,6 +4,7 @@ import { BindSmartContractFeature } from './features/BindSmartContractFeature'
 import { CommitOperationFeature } from './features/CommitOperationFeature'
 import { ConfirmOperationFeature } from './features/ConfirmOperationFeature'
 import { CreateAssetFeature } from './features/CreateAssetFeature'
+import { DecodeWalletFeature } from './features/DecodeWalletFeature'
 import { DestroyAssetFeature } from './features/DestroyAssetFeature'
 import { EncodeFeature } from './features/EncodeFeature'
 import InvokeContractFeature from './features/InvokeContractFeature'
@@ -28,7 +29,8 @@ export type Features = PaymentFeature &
   BaseGasFeature &
   InvokeContractFeature &
   BindSmartContractFeature &
-  SmartContractWalletFeature
+  SmartContractWalletFeature &
+  DecodeWalletFeature
 
 /**
  * Abstract blockchain gateway.
