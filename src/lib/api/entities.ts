@@ -3,6 +3,7 @@
   transactions (Parameters and responses).
 */
 import { Arc69 } from "../AssetNote"
+
 export interface Asset {
   'asset-id': number
   amount?: number
@@ -34,10 +35,22 @@ export interface Nft {
 /** A discriminator field that tells us about the type of asset sale (What mode). */
 export type RekeyAccountType = 'direct-listing' | 'create-auction' | undefined
 
+export interface Auction {
+  id: string
+  startDate: string
+  endDate: string
+  createdAt: Date
+  updatedAt: Date
+  deletedAt?: Date | null
+}
 export interface Listing {
   id: string
   assetUrl?: string | undefined
   marketplaceWallet: string
+  assetId: string
+  asset: Nft
+  auction?: Auction
+  auctionId?: string
   assetIdBlockchain: number
   applicationIdBlockchain: number
   isClosed: boolean
