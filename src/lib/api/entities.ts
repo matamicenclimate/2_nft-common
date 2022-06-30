@@ -2,6 +2,7 @@
   This module contains data about the entities used in API
   transactions (Parameters and responses).
 */
+import { Arc69 } from "../AssetNote"
 export interface Asset {
   'asset-id': number
   amount?: number
@@ -21,24 +22,7 @@ export interface Cause {
 }
 
 export interface Nft {
-  arc69: {
-    description: string
-    external_url: string
-    mime_type: string
-    properties: {
-      app_id?: number
-      artist: string
-      cause: string
-      causePercentage: number
-      file: {
-        name: string
-        type: string
-        size: number
-      }
-      date: Date
-      price: number
-    }
-  }
+  arc69: Arc69
   id: number
   image_url: string
   ipnft: string
@@ -54,8 +38,6 @@ export interface Listing {
   id: string
   assetUrl?: string | undefined
   marketplaceWallet: string
-  assetId: string
-  auctionId?: string
   assetIdBlockchain: number
   applicationIdBlockchain: number
   isClosed: boolean

@@ -10,7 +10,7 @@ export interface Arc69 {
   external_url: string
   mime_type: string
   properties: Properties
-  standard: string
+  standard?: string
 }
 export interface Properties {
   artist: string
