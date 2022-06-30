@@ -8,5 +8,5 @@ export interface DecodeWalletFeature {
    * Tries to decode an address-like, binary or text encoded
    * address representing a wallet.
    */
-  decodeWallet(from: AddressLike): Result<ChainWallet>
+  decodeWallet(from: AddressLike): Promise<Result<ChainWallet>>
 }

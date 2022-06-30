@@ -25,6 +25,10 @@ export class SmartContract {
     return result
   }
 
+  /**
+   * @TODO Implement output.
+   * @deprecated DO NOT USE YET!
+   */
   async invoke<A = void>(params: InvokeParams): Promise<A> {
     const result = await this.prepareInvoke(params)
     const tx = await this.chain

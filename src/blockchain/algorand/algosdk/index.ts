@@ -4,7 +4,7 @@ import BlockchainGatewayProvider from '../../BlockchainGatewayProvider'
 import { BlockchainGateway } from '../..'
 import { EncodeParameters, EncodeResult } from '../../features/EncodeFeature'
 import { OptInParameters, OptInResult } from '../../features/OptInFeature'
-import { PaymentParameters, PaymentResult } from '../../features/PaymentFeature'
+import { PaymentParameters } from '../../features/PaymentFeature'
 import { CreateAssetParameters } from '../../features/CreateAssetFeature'
 import {
   CommittedOperation,
@@ -44,6 +44,9 @@ import {
   Asserted,
   Unasserted,
 } from './implementation'
+import { Result } from '@common/src/lib/Result'
+import { AddressLike } from '../../features/DecodeWalletFeature'
+import { ChainWallet } from '../../lib/ChainWallet'
 
 export class AlgosdkAlgorandGateway implements BlockchainGateway {
   private assert<A extends Unasserted>(input: A): Asserted<A> {
@@ -63,6 +66,18 @@ export class AlgosdkAlgorandGateway implements BlockchainGateway {
     private readonly client: algosdk.Algodv2,
     private readonly signer: OperationSigner
   ) {}
+  pay(params: PaymentParameters): Promise<UnsignedOperation> {
+    throw new Error('Method not implemented.')
+  }
+  optIn(params: OptInParameters): Promise<OptInResult> {
+    throw new Error('Method not implemented.')
+  }
+  getSmartContractWallet(smartContract: SmartContractID): Promise<ChainWallet> {
+    throw new Error('Method not implemented.')
+  }
+  decodeWallet(from: AddressLike): Promise<Result<ChainWallet>> {
+    throw new Error('Method not implemented.')
+  }
   async callSmartContract(
     params: InvokeContractParameters
   ): Promise<InvokeContractResult> {
@@ -222,15 +237,8 @@ export class AlgosdkAlgorandGateway implements BlockchainGateway {
       payload: algosdk.encodeObj(params.object),
     }
   }
-  static register() {}
   get id(): typeof ALGORAND_GATEWAY_ID {
     return ALGORAND_GATEWAY_ID
-  }
-  async pay(params: PaymentParameters): Promise<PaymentResult> {
-    throw new Error('Method not implemented.')
-  }
-  async optIn(params: OptInParameters): Promise<OptInResult> {
-    throw new Error('Method not implemented.')
   }
 }
 
