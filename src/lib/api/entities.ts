@@ -32,6 +32,21 @@ export interface Nft {
   creator: string
 }
 
+export interface AssetEntity {
+  id: string
+  arc69: Arc69
+  assetIdBlockchain: number
+  causeId: string
+  applicationIdBlockchain: number
+  imageUrl: string
+  ipnft: string
+  url: string
+  title: string
+  creator: string
+  createdAt: Date
+  updatedAt: Date
+  deletedAt?: Date | null;
+}
 /** A discriminator field that tells us about the type of asset sale (What mode). */
 export type RekeyAccountType = 'direct-listing' | 'create-auction' | undefined
 
@@ -48,7 +63,7 @@ export interface Listing {
   assetUrl?: string | undefined
   marketplaceWallet: string
   assetId: string
-  asset: Nft
+  asset: AssetEntity
   auction?: Auction
   auctionId?: string
   assetIdBlockchain: number
