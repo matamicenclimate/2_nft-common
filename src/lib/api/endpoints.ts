@@ -2,6 +2,7 @@
   This contains data about endpoints shared between client and server.
 */
 
+import AssetEntity from 'src/domain/model/AssetEntity'
 import { Get, Post, Delete } from '.'
 import { Asset, Cause, Nft, Listing } from './entities'
 
@@ -12,8 +13,8 @@ export type core = {
   get: {
     nfts: Get<Nft[]>
     assets: Get<{ assets: Listing[] }, { wallet?: string }>
-    'my-assets': Get<{ assets: Asset[] }, { wallet?: string }>
-    'asset/:id': Get<{ value: Listing }, undefined, 'id'>
+    'my-assets': Get<{ assets: (Asset | AssetEntity)[] }, { wallet?: string }>
+    'asset/:id': Get<{ value: Nft }, undefined, 'id'>
     'asset-info/:id': Get<Listing, undefined, 'id'>
     healthz: Get<{ status: 'ok' }>
   }
