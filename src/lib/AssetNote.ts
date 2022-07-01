@@ -5,6 +5,13 @@ export interface AssetNote {
   title: string
   url: string
 }
+export type CauseInfo = {
+  cause: string,
+  causePercentage: number,
+}
+
+type Properties = Record<string, any> & ResultProperties & CauseInfo
+
 export interface Arc69 {
   description: string
   external_url: string
@@ -12,7 +19,7 @@ export interface Arc69 {
   properties: Properties
   standard?: string
 }
-export interface Properties {
+export interface ResultProperties {
   artist: string
   cause: string
   causePercentage: number
