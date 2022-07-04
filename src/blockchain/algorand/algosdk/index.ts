@@ -44,7 +44,7 @@ import {
   Asserted,
   Unasserted,
 } from './implementation'
-import { Result } from '@common/src/lib/Result'
+import { failure, Result, success } from '@common/src/lib/Result'
 import { AddressLike } from '../../features/DecodeWalletFeature'
 import { ChainWallet } from '../../lib/ChainWallet'
 
@@ -66,17 +66,26 @@ export class AlgosdkAlgorandGateway implements BlockchainGateway {
     private readonly client: algosdk.Algodv2,
     private readonly signer: OperationSigner
   ) {}
-  pay(params: PaymentParameters): Promise<UnsignedOperation> {
+  async pay(params: PaymentParameters): Promise<UnsignedOperation> {
     throw new Error('Method not implemented.')
   }
-  optIn(params: OptInParameters): Promise<OptInResult> {
+  async optIn(params: OptInParameters): Promise<OptInResult> {
     throw new Error('Method not implemented.')
   }
-  getSmartContractWallet(smartContract: SmartContractID): Promise<ChainWallet> {
+  async getSmartContractWallet(
+    smartContract: SmartContractID
+  ): Promise<ChainWallet> {
     throw new Error('Method not implemented.')
   }
-  decodeWallet(from: AddressLike): Promise<Result<ChainWallet>> {
-    throw new Error('Method not implemented.')
+  async decodeWallet(from: AddressLike): Promise<Result<ChainWallet>> {
+    if (from instanceof Uint8Array) {
+      return success(new AlgorandChainWallet(from))
+    }
+    if (typeof from === 'string') {
+      const out = algosdk.decodeAddress(from)
+      return success(new AlgorandChainWallet(out.publicKey))
+    }
+    return failure(new Error(`Cannot decode this wallet.`))
   }
   async callSmartContract(
     params: InvokeContractParameters
