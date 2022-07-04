@@ -2,9 +2,8 @@
   This contains data about endpoints shared between client and server.
 */
 
-import AssetEntity from 'src/domain/model/AssetEntity'
 import { Get, Post, Delete } from '.'
-import { Asset, Cause, Nft, Listing } from './entities'
+import { Asset, Cause, Nft, Listing, AssetEntity } from './entities'
 
 /**
  * Endpoints for the core microservice.
@@ -15,6 +14,7 @@ export type core = {
     assets: Get<{ assets: Listing[] }, { wallet?: string }>
     'my-assets': Get<{ assets: (Asset | AssetEntity)[] }, { wallet?: string }>
     'asset/:id': Get<{ value: Nft }, undefined, 'id'>
+    'listing/:id': Get<Listing, undefined, 'id'>
     'asset-info/:id': Get<Listing, undefined, 'id'>
     healthz: Get<{ status: 'ok' }>
   }
