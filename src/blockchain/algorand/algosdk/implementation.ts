@@ -13,6 +13,9 @@ import { SmartContractID } from '../../lib/SmartContract'
 import { SmartContractMethod } from '../../lib/SmartContractMethod'
 
 export class AlgorandChainWallet extends ChainWallet {
+  isNull(): boolean {
+    return this.address.reduce((a, b) => a + b, 0) === 0
+  }
   constructor(readonly address: Uint8Array) {
     super()
   }
