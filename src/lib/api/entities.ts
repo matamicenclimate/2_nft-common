@@ -71,6 +71,7 @@ export interface Listing {
   isClosed: boolean
   createdAt: Date
   updatedAt: Date
+  type: string
   deletedAt?: Date | null
 }
 
