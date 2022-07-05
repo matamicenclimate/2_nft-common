@@ -71,7 +71,7 @@ export interface Listing {
   isClosed: boolean
   createdAt: Date
   updatedAt: Date
-  type: string
+  type: 'auction' | 'direct-listing'
   deletedAt?: Date | null
 }
 
