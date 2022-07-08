@@ -67,6 +67,22 @@ export type Post<
   body: Body
 }
 
+/**
+ * Represents a POST type request.
+ * @template Res The structure of response of the endpoint.
+ * @template Body The structure of the request body.
+ * @template Params A union of path parameters.
+ * @template Head Required headers object.
+ */
+ export type Put<
+  Res,
+  Body,
+  Params extends string | undefined = undefined,
+  Head = undefined
+  > = Endpoint<'PUT', Res, Params, Head> & {
+  body: Body
+}
+
 export type Delete<
   Res,
   Params extends string | undefined = undefined,
@@ -79,7 +95,7 @@ export type AnyEndpoint = Endpoint<
   string | undefined,
   unknown
 >
-export type AnyPost = Post<unknown, unknown, string | undefined, unknown>
+export type AnyPost = Post<unknown, unknown, string | undefined, unknown> | Put<unknown, unknown, string | undefined, unknown>
 export type AnyGet = Get<unknown, unknown, string | undefined, unknown>
 
 /**

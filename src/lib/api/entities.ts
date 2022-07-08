@@ -58,12 +58,24 @@ export interface Auction {
   updatedAt: Date
   deletedAt?: Date | null
 }
+export interface Offer {
+  id: string
+  offerWallet: string
+  price: number
+  listingId: string
+  listing?: Listing 
+  transactionId: string
+  createdAt: Date
+  updatedAt: Date
+  deletedAt?: Date | null
+}
 export interface Listing {
   id: string
   assetUrl?: string | undefined
   marketplaceWallet: string
   assetId: string
   asset: AssetEntity
+  offers?: Offer[]
   auction?: Auction
   auctionId?: string
   assetIdBlockchain: number

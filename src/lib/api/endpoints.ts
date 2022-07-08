@@ -2,7 +2,7 @@
   This contains data about endpoints shared between client and server.
 */
 
-import { Get, Post, Delete } from '.'
+import { Get, Post, Delete, Put } from '.'
 import { Asset, Cause, Nft, Listing, AssetEntity } from './entities'
 
 /**
@@ -17,6 +17,24 @@ export type core = {
     'listing/:id': Get<Listing, undefined, 'id'>
     'asset-info/:id': Get<Listing, undefined, 'id'>
     healthz: Get<{ status: 'ok' }>
+  }
+  put: {
+    'make-offer': Put<
+      {
+        offerWallet: string,
+        transactionId: string,
+        listingId: string,
+        price: number
+      },
+      {
+        assetId: number,
+        offerWallet: string,
+        transactionId: string,
+        listingId: string,
+        type: string,
+        price: number
+      }
+    >
   }
   post: {
     'opt-in': Post<{ targetAccount: string }, { assetId: number }>
