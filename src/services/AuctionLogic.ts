@@ -11,6 +11,7 @@ import '../lib/binary/extension'
 import { failure, Result, success } from '../lib/Result'
 import { TransactionLike } from 'algosdk'
 import directListingAbi from '../abi/direct-listing.abi'
+import { CauseAppInfo } from '../../../src/interfaces/index';
 
 @Service()
 export class AuctionLogic {
@@ -70,6 +71,61 @@ export class AuctionLogic {
       algosdk.decodeAddress(causeWallet).publicKey,
       creatorPercentage.toBytes(8, 'big'),
       causePercentage.toBytes(8, 'big'),
+    ]
+    const client = this.client.client
+    const params = await client.getTransactionParams().do()
+    const txn = await algosdk.makeApplicationCreateTxnFromObject({
+      from: this.account.account.addr,
+      suggestedParams: params,
+      onComplete: algosdk.OnApplicationComplete.NoOpOC,
+      approvalProgram: approval,
+      clearProgram: clear,
+      foreignAssets: [assetId],
+      numGlobalByteSlices: 4,
+      numGlobalInts: 9,
+      numLocalByteSlices: 0,
+      numLocalInts: 0,
+      appArgs: args,
+    })
+    const { txId, result } =
+      await this.op.signAndConfirm<AuctionCreationResult>(txn)
+    console.log(
+      `Auction Application creation TX: https://testnet.algoexplorer.io/tx/${txId}`
+    )
+    return result
+  }
+
+  async createAuctionApp(
+    assetId: number,
+    reserve: number,
+    bidIncrement: number,
+    cause: CauseAppInfo,
+    creatorWallet: string,
+    startDate: string,
+    endDate: string
+  ): Promise<AuctionCreationResult> {
+    const approval = await this.programs.auctionApprovalProgram
+    const clear = await this.programs.clearStateProgram
+    const start = Math.floor(Date.parse(startDate) / 1000 + 60)
+    const end = Math.floor(Date.parse(endDate) / 1000)
+    console.warn(`Auction start in ${start} and end on ${end}`)
+    console.warn(
+      `creatorAddress ${creatorWallet} and causeAddress on ${cause.causeWallet}`
+    )
+    console.warn(
+      `causePercentage ${cause.causePercentage} and creatorPercentage on ${cause.creatorPercentage}`
+    )
+    const args: Uint8Array[] = [
+      algosdk.decodeAddress(this.account.account.addr).publicKey,
+      assetId.toBytes(8, 'big'),
+      start.toBytes(8, 'big'),
+      end.toBytes(8, 'big'),
+      reserve.toBytes(8, 'big'),
+      bidIncrement.toBytes(8, 'big'),
+      algosdk.decodeAddress(creatorWallet).publicKey,
+      algosdk.decodeAddress(cause.causeWallet).publicKey,
+      cause.creatorPercentage.toBytes(8, 'big'),
+      cause.causePercentage.toBytes(8, 'big'),
     ]
     const client = this.client.client
     const params = await client.getTransactionParams().do()

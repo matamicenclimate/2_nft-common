@@ -2,8 +2,9 @@
   This contains data about endpoints shared between client and server.
 */
 
+import algosdk from 'algosdk'
 import { Get, Post, Delete, Put } from '.'
-import { Asset, Cause, Nft, Listing, AssetEntity } from './entities'
+import { Asset, Cause, Nft, Listing, AssetEntity, ListingTypes } from './entities'
 
 /**
  * Endpoints for the core microservice.
@@ -58,6 +59,17 @@ export type core = {
     >
     'activate-auction': Post<{ appId: number; assetId: number }, undefined>
     ipfs: Post<Nft, FormData>
+    'create-listing': Post<
+      CreateListingResponse,
+    {
+      assetId: number
+      creatorWallet: string
+      type: ListingTypes
+      causePercentage: number
+      startDate: string
+      endDate: string
+    }
+  >
   }
   delete: {
     'sell-asset/:appId': Delete<undefined, 'appId'>
@@ -92,4 +104,9 @@ export type causes = {
       }
     >
   }
+}
+
+export type CreateListingResponse = {
+  appIndex: number
+  unsignedTxnGroup: algosdk.Transaction[]
 }

@@ -69,6 +69,8 @@ export interface Offer {
   updatedAt: Date
   deletedAt?: Date | null
 }
+
+export type ListingTypes = 'auction' | 'direct-listing'
 export interface Listing {
   id: string
   assetUrl?: string | undefined
@@ -83,7 +85,7 @@ export interface Listing {
   isClosed: boolean
   createdAt: Date
   updatedAt: Date
-  type: 'auction' | 'direct-listing'
+  type: ListingTypes
   deletedAt?: Date | null
 }
 
