@@ -68,8 +68,10 @@ export type core = {
       causePercentage: number
       startDate: string
       endDate: string
-    }
-  >
+  }>
+    'finish-create-listing': Post<
+      { appIndex: number },
+      CreateListingRequest>
   }
   delete: {
     'sell-asset/:appId': Delete<undefined, 'appId'>
@@ -110,3 +112,11 @@ export type CreateListingResponse = {
   appIndex: number
   unsignedTxnGroup: { encodedOpnInTxn: Uint8Array; signedFundAppTxn: Uint8Array; signedAppCallTxn: Uint8Array; signedPayGasTxn: Uint8Array; signedFundNftTxn: Uint8Array; }
 }
+
+export type CreateListingRequest = {
+  appIndex: number
+  type: string
+  signedTxn: CreateListingSignedTransactions
+}
+
+export type CreateListingSignedTransactions = { signedOpnInTxn: Uint8Array; signedFundAppTxn: Uint8Array; signedAppCallTxn: Uint8Array; signedPayGasTxn: Uint8Array; signedFundNftTxn: Uint8Array; }
