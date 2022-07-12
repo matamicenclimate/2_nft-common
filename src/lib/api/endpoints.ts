@@ -108,5 +108,5 @@ export type causes = {
 
 export type CreateListingResponse = {
   appIndex: number
-  unsignedTxnGroup: algosdk.Transaction[]
+  unsignedTxnGroup: { encodedOpnInTxn: Uint8Array; signedFundAppTxn: Uint8Array; signedAppCallTxn: Uint8Array; signedPayGasTxn: Uint8Array; signedFundNftTxn: Uint8Array; }
 }
