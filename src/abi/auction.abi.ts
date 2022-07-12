@@ -2,7 +2,7 @@ import algosdk from 'algosdk'
 
 function getContract() {
   return new algosdk.ABIContract({
-    name: 'climate_nft_direct_listing',
+    name: 'climate_nft_auction',
     methods: [
       {
         name: 'on_setup',
@@ -11,7 +11,6 @@ function getContract() {
         returns: { type: 'void' },
       },
       {
-        // TODO: Refactor method name
         name: 'on_bid',
         desc: 'TODO:',
         args: [],
