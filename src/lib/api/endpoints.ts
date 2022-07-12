@@ -110,7 +110,7 @@ export type causes = {
 
 export type CreateListingResponse = {
   appIndex: number
-  unsignedTxnGroup: { encodedOpnInTxn: Uint8Array; signedFundAppTxn: Uint8Array; signedAppCallTxn: Uint8Array; signedPayGasTxn: Uint8Array; signedFundNftTxn: Uint8Array; }
+  unsignedTxnGroup: { encodedOpnInTxn: string; signedFundAppTxn: string; signedAppCallTxn: string; signedPayGasTxn: string; signedFundNftTxn: string; }
 }
 
 export type CreateListingRequest = {
@@ -119,4 +119,4 @@ export type CreateListingRequest = {
   signedTxn: CreateListingSignedTransactions
 }
 
-export type CreateListingSignedTransactions = { signedOpnInTxn: Uint8Array; signedFundAppTxn: Uint8Array; signedAppCallTxn: Uint8Array; signedPayGasTxn: Uint8Array; signedFundNftTxn: Uint8Array; }
+export type CreateListingSignedTransactions = { signedOpnInTxn: string; signedFundAppTxn: string; signedAppCallTxn: string; signedPayGasTxn: string; signedFundNftTxn: string; }
