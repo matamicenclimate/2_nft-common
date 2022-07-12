@@ -37,10 +37,12 @@ type GetOptions<
 > = T['get'] extends undefined
   ? Record<string, never>
   : (Query<NonNullable<T['get']>[K]> extends undefined
-      ? Record<string, never>
+      ? /* eslint-disable @typescript-eslint/ban-types */
+        {}
       : { query: Query<NonNullable<T['get']>[K]> }) &
       (Params<NonNullable<T['get']>[K]> extends undefined
-        ? Record<string, never>
+        ? /* eslint-disable @typescript-eslint/ban-types */
+          {}
         : {
             params: {
               [R in NonNullable<Params<NonNullable<T['get']>[K]>>]: string

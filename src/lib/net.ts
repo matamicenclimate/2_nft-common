@@ -2,7 +2,7 @@
   Network utility functions.
 */
 
-import { none, option } from '@octantis/option'
+import { None, Option } from '@octantis/option'
 import axios, { AxiosError, AxiosResponse } from 'axios'
 
 export function errorIsAxios(err: unknown): err is AxiosError {
@@ -35,20 +35,20 @@ export const btJitter = (attempt: number) =>
 export async function retrying<A>(
   req: Promise<AxiosResponse<A>>,
   retries?: number,
-  onError?: (failed: AxiosError<A>) => option<A>
+  onError?: (failed: AxiosError<A>) => Option<A>
 ): Promise<AxiosResponse<A>>
 /** @internal */
 export async function retrying<A>(
   req: Promise<AxiosResponse<A>>,
   retries: number,
-  onError: (failed: AxiosError<A>) => option<A>,
+  onError: (failed: AxiosError<A>) => Option<A>,
   errors: Error[],
   attempt: number
 ): Promise<AxiosResponse<A>>
 export async function retrying<A>(
   req: Promise<AxiosResponse<A>>,
   retries: number = Number.POSITIVE_INFINITY,
-  onError: (failed: AxiosError<A>) => option<A> = () => none(),
+  onError: (failed: AxiosError<A>) => Option<A> = () => None(),
   errors: Error[] = [],
   attempt = 0
 ): Promise<AxiosResponse<A>> {
