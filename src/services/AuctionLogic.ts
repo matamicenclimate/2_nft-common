@@ -1,4 +1,4 @@
-import Container, { Inject, Service } from 'typedi'
+import Container, { Service } from 'typedi'
 import { AuctionCreationResult } from '../lib/AuctionCreationResult'
 import * as AVMProgramProvider from './AVMProgramProvider'
 import * as AVMDirectListingProgramProvider from './AVMDirectListingProgramProvider'

@@ -1,10 +1,10 @@
 // Simple multiplatform functional test
-if ((global as any).window != null) {
+if ((global as Record<string, unknown>).window != null) {
   throw new Error(`Can't run on browser.`)
 }
-const axios = require('axios')
+import axios from 'axios'
 import { retrying } from '../lib/net'
-const http = require('http')
+import http from 'http'
 
 const PORT = 9589
 
@@ -12,7 +12,7 @@ const expect = (2 + Math.random() * 20) >> 0
 let attempt = 0
 
 http
-  .createServer((_: any, res: any) => {
+  .createServer((_, res) => {
     if (++attempt >= expect) {
       res.writeHead(200)
     } else {
@@ -33,7 +33,7 @@ retrying(axios.get(`http://localhost:${PORT}`))
     console.timeEnd('Request time')
     process.exit(0)
   })
-  .catch((e: any) => {
+  .catch((e: unknown) => {
     console.error(e)
     process.exit(-1)
   })

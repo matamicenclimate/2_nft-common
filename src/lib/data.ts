@@ -53,7 +53,7 @@ export function parseKVFormat(src: string) {
 export function at<A extends readonly unknown[]>(position: number) {
   return {
     when<T>(predicate: (a: T) => a is T) {
-      return (a: A) => predicate(a[position] as any)
+      return (a: A) => predicate(a[position] as unknown as T)
     },
   }
 }

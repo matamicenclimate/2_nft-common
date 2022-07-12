@@ -1,5 +1,4 @@
 import { Account } from 'algosdk'
-import * as tdi from 'typedi'
 import AbstractService from '../lib/AbstractService'
 
 /**

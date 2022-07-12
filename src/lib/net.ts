@@ -18,9 +18,9 @@ export class RetryError extends Error {
 
 const using = <A>(value: A, fn: (a: A) => A) => fn(value)
 /** The backoff exponential base. */
-export let backoffBase = 2
+export const backoffBase = 2
 /** The backoff algorithm time cap. */
-export let backoffMaxTime = 10000
+export const backoffMaxTime = 10000
 /** Computes the maximum backoff time. */
 export const backoffTime = (attempt: number) =>
   Math.min(backoffMaxTime, backoffBase * 2 * attempt)

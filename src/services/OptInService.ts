@@ -1,6 +1,6 @@
 import algosdk from 'algosdk'
 import * as WalletAccountProvider from './WalletAccountProvider'
-import Container, { Inject, Service } from 'typedi'
+import Container, { Service } from 'typedi'
 import AlgodClientProvider from './AlgodClientProvider'
 import * as TransactionSigner from './TransactionSigner'
 import { TransactionOperation } from './TransactionOperation'
