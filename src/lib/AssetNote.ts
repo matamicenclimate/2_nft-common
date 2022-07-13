@@ -6,11 +6,13 @@ export interface AssetNote {
   url: string
 }
 export type CauseInfo = {
-  cause: string,
-  causePercentage: number,
+  cause: string
+  causePercentage: number
 }
 
-type Properties = Record<string, any> & ResultProperties & CauseInfo
+type Properties = Record<string, Record<string, unknown>> &
+  ResultProperties &
+  CauseInfo
 
 export interface Arc69 {
   description: string

@@ -2,7 +2,7 @@
   Network utility functions.
 */
 
-import { none, option } from '@octantis/option'
+import { None, Option } from '@octantis/option'
 import axios, { AxiosError, AxiosResponse } from 'axios'
 
 export function errorIsAxios(err: unknown): err is AxiosError {
@@ -18,9 +18,9 @@ export class RetryError extends Error {
 
 const using = <A>(value: A, fn: (a: A) => A) => fn(value)
 /** The backoff exponential base. */
-export let backoffBase = 2
+export const backoffBase = 2
 /** The backoff algorithm time cap. */
-export let backoffMaxTime = 10000
+export const backoffMaxTime = 10000
 /** Computes the maximum backoff time. */
 export const backoffTime = (attempt: number) =>
   Math.min(backoffMaxTime, backoffBase * 2 * attempt)
@@ -35,20 +35,20 @@ export const btJitter = (attempt: number) =>
 export async function retrying<A>(
   req: Promise<AxiosResponse<A>>,
   retries?: number,
-  onError?: (failed: AxiosError<A>) => option<A>
+  onError?: (failed: AxiosError<A>) => Option<A>
 ): Promise<AxiosResponse<A>>
 /** @internal */
 export async function retrying<A>(
   req: Promise<AxiosResponse<A>>,
   retries: number,
-  onError: (failed: AxiosError<A>) => option<A>,
+  onError: (failed: AxiosError<A>) => Option<A>,
   errors: Error[],
   attempt: number
 ): Promise<AxiosResponse<A>>
 export async function retrying<A>(
   req: Promise<AxiosResponse<A>>,
   retries: number = Number.POSITIVE_INFINITY,
-  onError: (failed: AxiosError<A>) => option<A> = () => none(),
+  onError: (failed: AxiosError<A>) => Option<A> = () => None(),
   errors: Error[] = [],
   attempt = 0
 ): Promise<AxiosResponse<A>> {

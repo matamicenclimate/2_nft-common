@@ -35,12 +35,14 @@ type GetOptions<
   T extends EndpointClient,
   K extends keyof T['get']
 > = T['get'] extends undefined
-  ? {}
+  ? Record<string, never>
   : (Query<NonNullable<T['get']>[K]> extends undefined
-      ? {}
+      ? /* eslint-disable @typescript-eslint/ban-types */
+        {}
       : { query: Query<NonNullable<T['get']>[K]> }) &
       (Params<NonNullable<T['get']>[K]> extends undefined
-        ? {}
+        ? /* eslint-disable @typescript-eslint/ban-types */
+          {}
         : {
             params: {
               [R in NonNullable<Params<NonNullable<T['get']>[K]>>]: string
@@ -60,8 +62,8 @@ type PostOptions<T extends EndpointClient, K extends keyof T['post']> = Maybe<
 >
 
 type If<T, A, B> = T extends undefined ? B : A
-type Require<T, A> = If<T, A, never>
-type Maybe<T, A> = If<T, A, {}>
+// type Require<T, A> = If<T, A, never>
+type Maybe<T, A> = If<T, A, Record<string, never>>
 
 export type CustomClient<T extends EndpointClient> = Omit<
   AxiosInstance,
@@ -86,7 +88,7 @@ function patch(client: AxiosInstance, key: HttpVerbLow) {
     ;(config as unknown as Record<string, unknown>).params = (
       config as unknown as Record<string, unknown>
     ).query
-    url = url.toString().replace(/:([^\/]+)/g, (_, p) => params[p])
+    url = url.toString().replace(/:([^/]+)/g, (_, p) => params[p])
     return original(url, config as unknown as Record<string, unknown>)
   }
 }

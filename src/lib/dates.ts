@@ -1,7 +1,7 @@
 /*
   This module contains common abstractions for date checks.
 */
-import { none, option, some } from '@octantis/option'
+import { None, Option, Some } from '@octantis/option'
 
 /**
  * ## Immutable Date
@@ -35,13 +35,13 @@ export type DateLike = Omit<
  * Attempts to parse the input string as a valid moment.
  * If not a valid unix timestamp, returns empty.
  */
-export function asMoment(input: string): option<number> {
-  if (typeof input !== 'string') return none()
+export function asMoment(input: string): Option<number> {
+  if (typeof input !== 'string') return None()
   const moment = Date.parse(input)
   if (Number.isNaN(moment)) {
-    return none()
+    return None()
   }
-  return some(moment)
+  return Some(moment)
 }
 
 /**
@@ -58,7 +58,7 @@ export function isValidDate(input: string): boolean {
  * Attempts to parse the input, if not valid will return
  * an empty option.
  */
-export function asDate(input: string): option<DateLike> {
+export function asDate(input: string): Option<DateLike> {
   return asMoment(input).map(moment => new Date(moment))
 }
 
@@ -75,7 +75,7 @@ class Delta {
    * Returns the difference between two dates, in milliseconds.
    */
   static from(start: DateLike, end: DateLike): Delta {
-    return new Delta((end as any) - (start as any))
+    return new Delta((end as unknown as number) - (start as unknown as number))
   }
 }
 
@@ -107,11 +107,11 @@ class DateDiff {
 export function diffFrom(
   start?: DateLike | null,
   end?: DateLike | null
-): option<DateDiff> {
+): Option<DateDiff> {
   if (start != null && end != null) {
-    return some(new DateDiff(start, end))
+    return Some(new DateDiff(start, end))
   }
-  return none()
+  return None()
 }
 
 /**
@@ -119,7 +119,7 @@ export function diffFrom(
  * time delta.
  * If one or both input strings account as invalid, it won't resolve.
  */
-export function asDiff(start: string, end: string): option<DateDiff> {
+export function asDiff(start: string, end: string): Option<DateDiff> {
   return asDate(start)
     .zip(asDate(end))
     .map(([start, end]) => new DateDiff(start, end))
