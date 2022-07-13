@@ -1,10 +1,15 @@
 /*
   This contains data about endpoints shared between client and server.
 */
-
-import algosdk from 'algosdk'
 import { Get, Post, Delete, Put } from '.'
-import { Asset, Cause, Nft, Listing, AssetEntity, ListingTypes } from './entities'
+import {
+  Asset,
+  Cause,
+  Nft,
+  Listing,
+  AssetEntity,
+  ListingTypes,
+} from './entities'
 
 /**
  * Endpoints for the core microservice.
@@ -22,17 +27,17 @@ export type core = {
   put: {
     'make-offer': Put<
       {
-        offerWallet: string,
-        transactionId: string,
-        listingId: string,
+        offerWallet: string
+        transactionId: string
+        listingId: string
         price: number
       },
       {
-        assetId: number,
-        offerWallet: string,
-        transactionId: string,
-        listingId: string,
-        type: string,
+        assetId: number
+        offerWallet: string
+        transactionId: string
+        listingId: string
+        type: string
         price: number
       }
     >
@@ -61,17 +66,16 @@ export type core = {
     ipfs: Post<Nft, FormData>
     'create-listing': Post<
       CreateListingResponse,
-    {
-      assetId: number
-      creatorWallet: string
-      type: ListingTypes
-      causePercentage: number
-      startDate: string
-      endDate: string
-  }>
-    'finish-create-listing': Post<
-      { appIndex: number },
-      CreateListingRequest>
+      {
+        assetId: number
+        creatorWallet: string
+        type: ListingTypes
+        causePercentage: number
+        startDate: string
+        endDate: string
+      }
+    >
+    'finish-create-listing': Post<{ appIndex: number }, CreateListingRequest>
   }
   delete: {
     'sell-asset/:appId': Delete<undefined, 'appId'>
@@ -110,13 +114,21 @@ export type causes = {
 
 export type CreateListingResponse = {
   appIndex: number
-  unsignedTxnGroup: { encodedOpnInTxn: string; signedFundAppTxn: string; signedAppCallTxn: string; signedPayGasTxn: string; signedFundNftTxn: string; }
+  unsignedTxnGroup: {
+    encodedOpnInTxn: string
+    signedFundAppTxn: string
+    signedAppCallTxn: string
+    signedPayGasTxn: string
+    signedFundNftTxn: string
+  }
 }
 
 export type CreateListingRequest = {
   appIndex: number
-  type: string
+  type: ListingTypes
   signedTxn: CreateListingSignedTransactions
 }
 
-export type CreateListingSignedTransactions = { signedOpnInTxn: string; signedFundAppTxn: string; signedAppCallTxn: string; signedPayGasTxn: string; signedFundNftTxn: string; }
+export type CreateListingSignedTransactions = {
+  signedOpnInTxn: string
+} & Omit<CreateListingResponse['unsignedTxnGroup'], 'encodedOpnInTxn'>

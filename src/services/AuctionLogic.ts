@@ -11,7 +11,7 @@ import '../lib/binary/extension'
 import { failure, Result, success } from '../lib/Result'
 import { TransactionLike } from 'algosdk'
 import directListingAbi from '../abi/direct-listing.abi'
-import { CauseAppInfo } from '../../../src/interfaces/index';
+import { CauseAppInfo } from '../lib/api/entities'
 
 @Service()
 export class AuctionLogic {
