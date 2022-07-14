@@ -64,18 +64,11 @@ export type core = {
     >
     'activate-auction': Post<{ appId: number; assetId: number }, undefined>
     ipfs: Post<Nft, FormData>
-    'create-listing': Post<
-      CreateListingResponse,
-      {
-        assetId: number
-        creatorWallet: string
-        type: ListingTypes
-        causePercentage: number
-        startDate?: string
-        endDate?: string
-      }
+    'create-listing': Post<CreateListingResponse, CreateListingRequest>
+    'finish-create-listing': Post<
+      { appIndex: number },
+      FinishCreateListingRequest
     >
-    'finish-create-listing': Post<{ appIndex: number }, CreateListingRequest>
   }
   delete: {
     'sell-asset/:appId': Delete<undefined, 'appId'>
@@ -124,7 +117,26 @@ export type CreateListingResponse = {
   }
 }
 
-export type CreateListingRequest = {
+interface CLRShared {
+  assetId: number
+  creatorWallet: string
+  type: ListingTypes
+  causePercentage: number
+}
+
+interface CLRAuction extends CLRShared {
+  type: 'auction'
+  startDate: string
+  endDate: string
+}
+
+interface CLRDirect extends CLRShared {
+  type: 'direct-listing'
+}
+
+export type CreateListingRequest = CLRDirect | CLRAuction
+
+export type FinishCreateListingRequest = {
   appIndex: number
   type: ListingTypes
   signedTxn: CreateListingSignedTransactions
