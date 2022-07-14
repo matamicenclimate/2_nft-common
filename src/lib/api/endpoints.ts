@@ -115,7 +115,7 @@ export type causes = {
 export type CreateListingResponse = {
   appIndex: number
   unsignedTxnGroup: {
-    encodedOptInTxn: string
+    signedOptInTxn: string
     encodedTransferTxn: string
     signedFundAppTxn: string
     signedAppCallTxn: string
@@ -131,8 +131,5 @@ export type CreateListingRequest = {
 }
 
 export type CreateListingSignedTransactions = {
-  signedOpnInTxn: string
-} & Omit<
-  CreateListingResponse['unsignedTxnGroup'],
-  'encodedOptInTxn' | 'encodedTransferTxn'
->
+  signedTransferTxn: string
+} & Omit<CreateListingResponse['unsignedTxnGroup'], 'encodedTransferTxn'>
