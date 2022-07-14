@@ -71,8 +71,8 @@ export type core = {
         creatorWallet: string
         type: ListingTypes
         causePercentage: number
-        startDate: string
-        endDate: string
+        startDate?: string
+        endDate?: string
       }
     >
     'finish-create-listing': Post<{ appIndex: number }, CreateListingRequest>
@@ -119,7 +119,7 @@ export type CreateListingResponse = {
     encodedTransferTxn: string
     signedFundAppTxn: string
     signedAppCallTxn: string
-    signedPayGasTxn: string
+    signedPayGasTxn?: string
     signedFundNftTxn: string
   }
 }
