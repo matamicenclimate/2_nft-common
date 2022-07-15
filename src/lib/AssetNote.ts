@@ -10,9 +10,7 @@ export type CauseInfo = {
   causePercentage: number
 }
 
-type Properties = Record<string, Record<string, unknown>> &
-  ResultProperties &
-  CauseInfo
+type Properties = Record<string, unknown> & ResultProperties & CauseInfo
 
 export interface Arc69 {
   description: string

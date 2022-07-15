@@ -2,7 +2,7 @@
   This module contains data about the entities used in API
   transactions (Parameters and responses).
 */
-import { Arc69 } from "../AssetNote"
+import { Arc69 } from '../AssetNote'
 
 export interface Asset {
   'asset-id': number
@@ -45,7 +45,7 @@ export interface AssetEntity {
   creator: string
   createdAt: Date
   updatedAt: Date
-  deletedAt?: Date | null;
+  deletedAt?: Date | null
 }
 /** A discriminator field that tells us about the type of asset sale (What mode). */
 export type RekeyAccountType = 'direct-listing' | 'create-auction' | undefined
@@ -63,12 +63,14 @@ export interface Offer {
   offerWallet: string
   price: number
   listingId: string
-  listing?: Listing 
+  listing?: Listing
   transactionId: string
   createdAt: Date
   updatedAt: Date
   deletedAt?: Date | null
 }
+
+export type ListingTypes = 'auction' | 'direct-listing'
 export interface Listing {
   id: string
   assetUrl?: string | undefined
@@ -83,10 +85,16 @@ export interface Listing {
   isClosed: boolean
   createdAt: Date
   updatedAt: Date
-  type: 'auction' | 'direct-listing'
+  type: ListingTypes
   deletedAt?: Date | null
 }
 
 export interface NftAssetInfo {
   assetInfo: Listing
+}
+
+export type CauseAppInfo = {
+  causeWallet: string
+  causePercentage: number
+  creatorPercentage: number
 }

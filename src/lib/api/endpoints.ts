@@ -1,9 +1,15 @@
 /*
   This contains data about endpoints shared between client and server.
 */
-
 import { Get, Post, Delete, Put } from '.'
-import { Asset, Cause, Nft, Listing, AssetEntity } from './entities'
+import {
+  Asset,
+  Cause,
+  Nft,
+  Listing,
+  AssetEntity,
+  ListingTypes,
+} from './entities'
 
 /**
  * Endpoints for the core microservice.
@@ -21,17 +27,17 @@ export type core = {
   put: {
     'make-offer': Put<
       {
-        offerWallet: string,
-        transactionId: string,
-        listingId: string,
+        offerWallet: string
+        transactionId: string
+        listingId: string
         price: number
       },
       {
-        assetId: number,
-        offerWallet: string,
-        transactionId: string,
-        listingId: string,
-        type: string,
+        assetId: number
+        offerWallet: string
+        transactionId: string
+        listingId: string
+        type: string
         price: number
       }
     >
@@ -58,6 +64,11 @@ export type core = {
     >
     'activate-auction': Post<{ appId: number; assetId: number }, undefined>
     ipfs: Post<Nft, FormData>
+    'create-listing': Post<CreateListingResponse, CreateListingRequest>
+    'finish-create-listing': Post<
+      { appIndex: number },
+      FinishCreateListingRequest
+    >
   }
   delete: {
     'sell-asset/:appId': Delete<undefined, 'appId'>
@@ -93,3 +104,44 @@ export type causes = {
     >
   }
 }
+
+export type CreateListingResponse = {
+  appIndex: number
+  unsignedTxnGroup: {
+    signedOptInTxn: string
+    encodedTransferTxn: string
+    signedFundAppTxn: string
+    signedAppCallTxn: string
+    signedPayGasTxn: string
+    signedFundNftTxn: string
+  }
+}
+
+interface CLRShared {
+  assetId: number
+  creatorWallet: string
+  type: ListingTypes
+  causePercentage: number
+}
+
+interface CLRAuction extends CLRShared {
+  type: 'auction'
+  startDate: string
+  endDate: string
+}
+
+interface CLRDirect extends CLRShared {
+  type: 'direct-listing'
+}
+
+export type CreateListingRequest = CLRDirect | CLRAuction
+
+export type FinishCreateListingRequest = {
+  appIndex: number
+  type: ListingTypes
+  signedTxn: CreateListingSignedTransactions
+}
+
+export type CreateListingSignedTransactions = {
+  signedTransferTxn: string
+} & Omit<CreateListingResponse['unsignedTxnGroup'], 'encodedTransferTxn'>
