@@ -112,7 +112,7 @@ export type CreateListingResponse = {
     encodedTransferTxn: string
     signedFundAppTxn: string
     signedAppCallTxn: string
-    signedPayGasTxn?: string
+    signedPayGasTxn: string
     signedFundNftTxn: string
   }
 }
