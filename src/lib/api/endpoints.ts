@@ -9,6 +9,7 @@ import {
   Listing,
   AssetEntity,
   ListingTypes,
+  AssetInformation,
 } from './entities'
 
 /**
@@ -18,7 +19,7 @@ export type core = {
   get: {
     nfts: Get<Nft[]>
     assets: Get<{ assets: Listing[] }, { wallet?: string }>
-    'my-assets': Get<{ assets: (Asset | AssetEntity)[] }, { wallet?: string }>
+    'my-assets': Get<{ assets: AssetInformation[] }, { wallet?: string }>
     'asset/:id': Get<{ value: Nft }, undefined, 'id'>
     'listing/:id': Get<Listing, undefined, 'id'>
     'asset-info/:id': Get<Listing, undefined, 'id'>

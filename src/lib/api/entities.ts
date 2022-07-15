@@ -98,3 +98,83 @@ export type CauseAppInfo = {
   causePercentage: number
   creatorPercentage: number
 }
+
+/*
+ @todo REFACTOR TYPES!!!!! TIGHT COUPLING Transport layer <=> Storage layer
+ @warn This causes data inconsistencies plus a tight coupling with
+ the storage strategy, BEWARE!
+*/
+
+export const AssetInformationType = {
+  STORED_IN_WALLET: 'wallet' as const,
+  LISTED_AS_AUCTION: 'auction' as const,
+  LISTED_AS_SELLING: 'selling' as const,
+  UNKNOWN_STATE: 'unknown' as const,
+}
+
+export interface CommonAssetInfo {
+  id: number
+}
+
+/**
+ * Represents an asset that is present in the user's wallet.
+ */
+export interface StoredInWalletAssetInfo extends CommonAssetInfo {
+  readonly type: typeof AssetInformationType['STORED_IN_WALLET']
+  amount: number
+  _original: Asset
+}
+
+/**
+ * Common fields for all assets stored in the marketplace's database.
+ */
+export interface StoredInMarketplaceAssetInfo {
+  arc69: Arc69
+  causeId: string
+  applicationIdBlockchain: number
+  imageUrl: string
+  ipnft: string
+  url: string
+  title: string
+  creator: string
+  createdAt: Date
+  updatedAt: Date
+  deletedAt: Date | null
+  _original: AssetEntity
+}
+
+/**
+ * The asset information regarding an asset that has been listed
+ * in the marketplace as an _"Auction"_.
+ */
+export interface ListedAsAuctionAssetInfo
+  extends CommonAssetInfo,
+    StoredInMarketplaceAssetInfo {
+  readonly type: typeof AssetInformationType['LISTED_AS_AUCTION']
+}
+
+/**
+ * The asset information regarding an asset that has been listed
+ * in the marketplace as a _"Direct Selling"_.
+ */
+export interface ListedAsSellingAssetInfo
+  extends CommonAssetInfo,
+    StoredInMarketplaceAssetInfo {
+  readonly type: typeof AssetInformationType['LISTED_AS_SELLING']
+}
+
+/**
+ * # Asset Information Interface
+ *
+ * This type represents the whole asset information,
+ * regardless of it's data source or origin.
+ *
+ * All data might be discriminated through the type
+ * field, which are declared constant.
+ *
+ * @remarks Use only in transport layer! DO NOT ATTEMPT TO STORE!
+ */
+export type AssetInformation =
+  | StoredInWalletAssetInfo
+  | ListedAsAuctionAssetInfo
+  | ListedAsSellingAssetInfo
